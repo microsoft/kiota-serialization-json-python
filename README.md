@@ -1,14 +1,21 @@
-# Project
+# Kiota Serialization library for JSON
+[![PyPI version](https://badge.fury.io/py/kiota-serialization-json.svg)](https://badge.fury.io/py/kiota-serialization-json)
+[![CI Actions Status](https://github.com/microsoft/kiota-serialization-json-python/actions/workflows/build_publish.yml/badge.svg?branch=main)](https://github.com/microsoft/kiota-serialization-json-python/actions)
+[![Downloads](https://pepy.tech/badge/kiota-serialization-json)](https://pepy.tech/project/kiota-serialization-json)
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+The Kiota Serialization Library for JSON is a python implementation to serialize/deserialize JSON.
 
-As the maintainer of this project, please make a few updates:
+A [Kiota](https://github.com/microsoft/kiota) generated project will need a reference to a json serialization package to handle json payloads from an API endpoint.
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+Read more about Kiota [here](https://github.com/microsoft/kiota/blob/main/README.md).
+
+## Using the Kiota Serialization JSON library
+
+In order to use this library, install the package by running:
+
+```cmd
+pip install kiota-serialization-json
+```
 
 ## Contributing
 
