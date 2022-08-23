@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import base64
 import json
 import re
@@ -6,6 +7,7 @@ from datetime import date, datetime, time, timedelta
 from enum import Enum
 from typing import Any, Callable, Dict, Generic, List, Optional, Type, TypeVar
 from uuid import UUID
+
 from dateutil import parser
 from kiota_abstractions.serialization import (
     AdditionalDataHolder,
@@ -140,7 +142,6 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             List[T]: The collection of primitive values
         """
-
         def func(item):
             generic_type = type(item)
             current_parse_node = JsonParseNode(item)

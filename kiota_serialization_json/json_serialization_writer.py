@@ -5,6 +5,7 @@ from enum import Enum
 from io import BytesIO
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 from uuid import UUID
+
 from kiota_abstractions.serialization import Parsable, SerializationWriter
 
 T = TypeVar("T")

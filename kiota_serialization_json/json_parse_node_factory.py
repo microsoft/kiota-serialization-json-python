@@ -1,13 +1,14 @@
 import json
 from io import BytesIO
+
 from kiota_abstractions.serialization import ParseNode, ParseNodeFactory
+
 from .json_parse_node import JsonParseNode
 
 
 class JsonParseNodeFactory(ParseNodeFactory):
     """Factory that is used to create JsonParseNodes.
     """
-
     def get_valid_content_type(self) -> str:
         """Returns the content type this factory's parse nodes can deserialize
         Returns:
