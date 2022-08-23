@@ -124,9 +124,9 @@ def test_get_collection_of_primitive_values():
     assert result == [12.1, 12.2, 12.3, 12.4, 12.5]
 
 
-def test_get_byte_array_value():
+def test_get_bytes_value():
     parse_node = JsonParseNode('U2Ftd2VsIGlzIHRoZSBiZXN0')
-    result = parse_node.get_byte_array_value()
+    result = parse_node.get_bytes_value()
     assert isinstance(result, bytes)
 
 
