@@ -9,7 +9,7 @@ python-dateutil = "==2.8.2"
 
 [dev-packages]
 flit = "==3.7.1"
-pylint = "==2.14.5"
+pylint = "==2.15.2"
 mypy = "==0.971"
 yapf = "==0.32.0"
 isort = "==5.10.1"
