@@ -2,7 +2,6 @@ import base64
 import json
 from datetime import date, datetime, time, timedelta
 from enum import Enum
-from io import BytesIO
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 from uuid import UUID
 
@@ -259,14 +258,14 @@ class JsonSerializationWriter(SerializationWriter):
             for key, val in value.items():
                 self.writer[key] = val
 
-    def get_serialized_content(self) -> BytesIO:
+    def get_serialized_content(self) -> bytes:
         """Gets the value of the serialized content.
         Returns:
-            BytesIO: The value of the serialized content.
+            bytes: The value of the serialized content.
         """
         json_string = json.dumps(self.writer)
         self.writer.clear()
-        stream = BytesIO(json_string.encode('utf-8'))
+        stream = json_string.encode('utf-8')
         return stream
 
     def get_on_before_object_serialization(self) -> Optional[Callable[[Parsable], None]]:
