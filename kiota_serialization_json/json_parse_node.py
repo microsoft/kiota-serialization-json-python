@@ -142,6 +142,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             List[T]: The collection of primitive values
         """
+
         def func(item):
             generic_type = type(item)
             current_parse_node = JsonParseNode(item)

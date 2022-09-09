@@ -6,6 +6,7 @@ from .json_serialization_writer import JsonSerializationWriter
 class JsonSerializationWriterFactory(SerializationWriterFactory):
     """A factory that creates JsonSerializationWriter instances.
     """
+
     def get_valid_content_type(self) -> str:
         """Gets the content type this factory creates serialization writers for.
         Returns:
