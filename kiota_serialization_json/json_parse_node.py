@@ -266,9 +266,15 @@ class JsonParseNode(ParseNode, Generic[T, U]):
 
     def _assign_field_values(self, item: U) -> None:
         fields = item.get_field_deserializers()
+        
         if isinstance(item, AdditionalDataHolder):
             item_additional_data = item.additional_data
+        
         object_dict = self._json_node
+        # if object is null
+        if not object_dict:
+            return
+        
         for key, val in object_dict.items():
             snake_case_key = re.sub(r'(?<!^)(?=[A-Z])', '_', key).lower()
             deserializer = fields.get(snake_case_key)
