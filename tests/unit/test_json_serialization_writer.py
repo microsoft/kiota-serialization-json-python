@@ -1,8 +1,11 @@
 from uuid import UUID
+
 import pytest
 from dateutil import parser
 from kiota_abstractions.serialization import Parsable, SerializationWriter
+
 from kiota_serialization_json.json_serialization_writer import JsonSerializationWriter
+
 from ..helpers import OfficeLocation, User
 
 
