@@ -1,7 +1,15 @@
 from __future__ import annotations
+
 from datetime import date, datetime
 from typing import Any, Callable, Dict, List, Optional, TypeVar
-from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
+
+from kiota_abstractions.serialization import (
+    AdditionalDataHolder,
+    Parsable,
+    ParseNode,
+    SerializationWriter,
+)
+
 from .office_location import OfficeLocation
 
 T = TypeVar('T')

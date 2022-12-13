@@ -1,7 +1,10 @@
 import pytest
 from kiota_abstractions.serialization import SerializationWriterFactory
+
 from kiota_serialization_json.json_serialization_writer import JsonSerializationWriter
-from kiota_serialization_json.json_serialization_writer_factory import JsonSerializationWriterFactory
+from kiota_serialization_json.json_serialization_writer_factory import (
+    JsonSerializationWriterFactory,
+)
 
 
 def test_get_serialization_writer():
