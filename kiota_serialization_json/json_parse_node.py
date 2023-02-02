@@ -203,6 +203,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         raw_key = self.get_str_value()
         if raw_key:
             camel_case_key = raw_key[0].upper() + raw_key[1:]
+        camel_case_key = None
         if camel_case_key:
             try:
                 return enum_class[camel_case_key]  # type: ignore
