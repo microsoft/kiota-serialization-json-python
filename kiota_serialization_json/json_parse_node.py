@@ -203,7 +203,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         raw_key = self.get_str_value()
         camel_case_key = None
         if raw_key:
-            if raw_key == "none":
+            if raw_key.lower() == "none":
                 # None is a reserved keyword in python
                 camel_case_key = "None_"
             else:
