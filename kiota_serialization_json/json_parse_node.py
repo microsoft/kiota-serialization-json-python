@@ -51,7 +51,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             Optional[ParseNode]: A new parse node for the given identifier
         """
-        if self._json_node and identifier:
+        if self._json_node and self._json_node.get(identifier):
             return JsonParseNode(self._json_node[identifier])
         return None
 
