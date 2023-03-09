@@ -281,10 +281,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             return
 
         for key, val in object_dict.items():
-            snake_case_key = re.sub(r'(?<!^)(?=[A-Z])', '_', key).lower()
-            deserializer = fields.get(snake_case_key)
+            deserializer = fields.get(key)
             if deserializer:
                 deserializer(JsonParseNode(val))
             else:
                 # if item_additional_data:
-                item_additional_data[snake_case_key] = val
+                item_additional_data[key] = val
