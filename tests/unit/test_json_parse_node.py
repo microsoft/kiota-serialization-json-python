@@ -6,7 +6,7 @@ import pytest
 
 from kiota_serialization_json.json_parse_node import JsonParseNode
 
-from ..helpers import OfficeLocation, User
+from ..helpers import Entity, OfficeLocation, User
 
 
 @pytest.fixture
@@ -29,6 +29,16 @@ def sample_user_json():
     )
     return user_json
 
+@pytest.fixture
+def sample_entity_json():
+
+    entity_json = json.dumps(
+        {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+            "id": "8f841f30-e6e3-439a-a812-ebd369559c36"
+        }
+    )
+    return entity_json
 
 @pytest.fixture
 def sample_users_json():
@@ -179,3 +189,10 @@ def test_get_collection_of_object_values(sample_users_json):
     assert result[0].is_active == True
     assert result[0].mobile_phone == None
     assert "@odata.context" in result[0].additional_data
+    
+def test_get_object_value_no_additional_data(sample_entity_json):
+    with pytest.warns(UserWarning):
+        parse_node = JsonParseNode(json.loads(sample_entity_json))
+        result = parse_node.get_object_value(Entity)
+        assert isinstance(result, Entity)
+        assert result.id == UUID("8f841f30-e6e3-439a-a812-ebd369559c36")
