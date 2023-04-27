@@ -140,19 +140,19 @@ class User(Parsable, AdditionalDataHolder):
         return {
             "id":
             lambda n: setattr(self, 'id', n.get_uuid_value()),
-            "displayName":
+            "display_name":
             lambda n: setattr(self, 'display_name', n.get_str_value()),
-            "officeLocation":
+            "office_location":
             lambda n: setattr(self, 'office_location', n.get_enum_value(OfficeLocation)),
-            "updatedAt":
+            "updated_at":
             lambda n: setattr(self, 'updated_at', n.get_datetime_value()),
             "birthday":
             lambda n: setattr(self, 'birthday', n.get_date_value()),
-            "businessPhones":
+            "business_phones":
             lambda n: setattr(self, 'business_phones', n.get_collection_of_primitive_values(str)),
-            "mobilePhone":
+            "mobile_phone":
             lambda n: setattr(self, 'mobile_phone', n.get_str_value()),
-            "isActive":
+            "is_active":
             lambda n: setattr(self, 'is_active', n.get_bool_value()),
             "age":
             lambda n: setattr(self, 'age', n.get_int_value()),

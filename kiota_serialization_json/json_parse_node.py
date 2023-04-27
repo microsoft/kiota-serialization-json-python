@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import re
+import warnings
 from datetime import date, datetime, time, timedelta
 from enum import Enum
 from typing import Any, Callable, Dict, Generic, List, Optional, Type, TypeVar
@@ -269,20 +270,28 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         self.on_after_assign_field_values = value
 
     def _assign_field_values(self, item: U) -> None:
-        fields = item.get_field_deserializers()
-
-        if isinstance(item, AdditionalDataHolder):
-            item_additional_data = item.additional_data
 
         object_dict = self._json_node
+
+        item_additional_data = None
+
         # if object is null
         if not object_dict:
             return
 
+        if isinstance(item, AdditionalDataHolder):
+            item_additional_data = item.additional_data
+
+        field_deserializers = item.get_field_deserializers()
+
         for key, val in object_dict.items():
-            deserializer = fields.get(key)
+            deserializer = field_deserializers.get(key)
             if deserializer:
                 deserializer(JsonParseNode(val))
-            else:
-                # if item_additional_data:
+            elif item_additional_data is not None:
                 item_additional_data[key] = val
+            else:
+                warnings.warn(
+                    f"Found additional property {key} to \
+                    deserialize but the model doesn't support additional data"
+                )
