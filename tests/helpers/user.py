@@ -204,7 +204,7 @@ class Entity(Parsable):
         Returns: Attachment
         """
         if not parse_node:
-            raise Exception("parse_node cannot be undefined")
+            raise ValueError("parse_node cannot be undefined")
         return Entity()
 
     def get_field_deserializers(self) -> Dict[str, Callable[[ParseNode], None]]:
@@ -226,6 +226,6 @@ class Entity(Parsable):
             writer (SerializationWriter): The writer to write to.
         """
         if not writer:
-            raise Exception("Writer cannot be undefined")
+            raise ValueError("Writer cannot be undefined")
         writer.write_uuid_value("id", self.id)
 

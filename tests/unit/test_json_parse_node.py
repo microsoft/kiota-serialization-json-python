@@ -1,6 +1,8 @@
 import json
+from dataclasses import asdict,dataclass
 from datetime import date, datetime, time, timedelta
 from uuid import UUID
+from typing import Optional
 
 import pytest
 
@@ -8,70 +10,68 @@ from kiota_serialization_json.json_parse_node import JsonParseNode
 
 from ..helpers import Entity, OfficeLocation, User
 
+url: str = "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
 
+@dataclass
+class UserClass:
+    odata_context: str
+    businessPhones: list[str]
+    displayName: str
+    mobilePhone: Optional[str]
+    officeLocation: str
+    updatedAt: str
+    birthday: str
+    isActive: bool
+    age: int
+    gpa: float
+    id: str
+    
+user1 = UserClass(
+        "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+        ["+1 205 555 0108"],
+        "Diego Siciliani",
+        None,
+        "dunhill",
+        "2021 -07-29T03:07:25Z",
+        "2000-09-04",
+        True,21,3.2,
+        "8f841f30-e6e3-439a-a812-ebd369559c36"
+        )
+user2 = UserClass(
+        "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+        ["425-555-0100"],
+        "MOD Administrator",
+        None,
+        "oval",
+        "2020 -07-29T03:07:25Z",
+        "1990-09-04",
+        True,
+        32,
+        3.9,
+        "f58411c7-ae78-4d3c-bb0d-3f24d948de41"
+        )
 @pytest.fixture
 def sample_user_json():
-
-    user_json = json.dumps(
-        {
-            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
-            "businessPhones": ["+1 205 555 0108"],
-            "displayName": "Diego Siciliani",
-            "mobilePhone": None,
-            "officeLocation": "dunhill",
-            "updatedAt": "2021 -07-29T03:07:25Z",
-            "birthday": "2000-09-04",
-            "isActive": True,
-            "age": 21,
-            "gpa": 3.2,
-            "id": "8f841f30-e6e3-439a-a812-ebd369559c36"
-        }
-    )
+    user_json = json.dumps(asdict(user1))
     return user_json
+
+@pytest.fixture
+def sample_users_json():
+    users_json = json.dumps([asdict(user1), asdict(user2)])
+    return users_json
 
 @pytest.fixture
 def sample_entity_json():
 
     entity_json = json.dumps(
         {
-            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#$entity",
             "id": "8f841f30-e6e3-439a-a812-ebd369559c36"
         }
     )
     return entity_json
 
-@pytest.fixture
-def sample_users_json():
-    users_json = json.dumps(
-        [
-            {
-                "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
-                "businessPhones": ["+1 425 555 0109"],
-                "displayName": "Adele Vance",
-                "mobilePhone": None,
-                "officeLocation": "dunhill",
-                "updatedAt": "2017 -07-29T03:07:25Z",
-                "birthday": "2000-09-04",
-                "isActive": True,
-                "age": 21,
-                "gpa": 3.7,
-                "id": "76cabd60-f9aa-4d23-8958-64f5539b826a"
-            },
-            {
-                "businessPhones": ["425-555-0100"],
-                "displayName": "MOD Administrator",
-                "mobilePhone": None,
-                "officeLocation": "oval",
-                "updatedAt": "2020 -07-29T03:07:25Z",
-                "birthday": "1990-09-04",
-                "isActive": True,
-                "age": 32,
-                "gpa": 3.9,
-                "id": "f58411c7-ae78-4d3c-bb0d-3f24d948de41"
-            },
-        ]
-    )
-    return users_json
+
 
 
 def test_get_str_value():
@@ -171,24 +171,24 @@ def test_get_object_value(sample_user_json):
     assert result.gpa == 3.2
     assert result.is_active == True
     assert result.mobile_phone == None
-    assert "@odata.context" in result.additional_data
+    assert "odata_context" in result.additional_data
 
 
 def test_get_collection_of_object_values(sample_users_json):
     parse_node = JsonParseNode(json.loads(sample_users_json))
     result = parse_node.get_collection_of_object_values(User)
     assert isinstance(result[0], User)
-    assert result[0].id == UUID("76cabd60-f9aa-4d23-8958-64f5539b826a")
-    assert result[0].display_name == "Adele Vance"
+    assert result[0].id == UUID("8f841f30-e6e3-439a-a812-ebd369559c36")
+    assert result[0].display_name == "Diego Siciliani"
     assert result[0].office_location == OfficeLocation.Dunhill
     assert isinstance(result[0].updated_at, datetime)
     assert isinstance(result[0].birthday, date)
-    assert result[0].business_phones == ["+1 425 555 0109"]
+    assert result[0].business_phones == ["+1 205 555 0108"]
     assert result[0].age == 21
-    assert result[0].gpa == 3.7
+    assert result[0].gpa == 3.2
     assert result[0].is_active == True
     assert result[0].mobile_phone == None
-    assert "@odata.context" in result[0].additional_data
+    assert "odata_context" in result[0].additional_data
     
 def test_get_object_value_no_additional_data(sample_entity_json):
     with pytest.warns(UserWarning):
