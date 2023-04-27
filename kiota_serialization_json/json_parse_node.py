@@ -270,18 +270,18 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         self.on_after_assign_field_values = value
 
     def _assign_field_values(self, item: U) -> None:
-        
+
         object_dict = self._json_node
-        
+
         item_additional_data = None
-        
+
         # if object is null
         if not object_dict:
             return
-        
+
         if isinstance(item, AdditionalDataHolder):
             item_additional_data = item.additional_data
-            
+
         field_deserializers = item.get_field_deserializers()
 
         for key, val in object_dict.items():
@@ -291,5 +291,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             elif item_additional_data is not None:
                 item_additional_data[key] = val
             else:
-                warnings.warn(f"Found additional property {key} to deserialize but the model doesn't support additional data")
-            
+                warnings.warn(
+                    f"Found additional property {key} to \
+                    deserialize but the model doesn't support additional data"
+                )
