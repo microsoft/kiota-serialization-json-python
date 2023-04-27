@@ -140,19 +140,19 @@ class User(Parsable, AdditionalDataHolder):
         return {
             "id":
             lambda n: setattr(self, 'id', n.get_uuid_value()),
-            "displayName":
+            "display_name":
             lambda n: setattr(self, 'display_name', n.get_str_value()),
-            "officeLocation":
+            "office_location":
             lambda n: setattr(self, 'office_location', n.get_enum_value(OfficeLocation)),
-            "updatedAt":
+            "updated_at":
             lambda n: setattr(self, 'updated_at', n.get_datetime_value()),
             "birthday":
             lambda n: setattr(self, 'birthday', n.get_date_value()),
-            "businessPhones":
+            "business_phones":
             lambda n: setattr(self, 'business_phones', n.get_collection_of_primitive_values(str)),
-            "mobilePhone":
+            "mobile_phone":
             lambda n: setattr(self, 'mobile_phone', n.get_str_value()),
-            "isActive":
+            "is_active":
             lambda n: setattr(self, 'is_active', n.get_bool_value()),
             "age":
             lambda n: setattr(self, 'age', n.get_int_value()),
@@ -178,54 +178,3 @@ class User(Parsable, AdditionalDataHolder):
         writer.write_bool_value("is_active", self.is_active)
         writer.write_int_value("age", self.age)
         writer.write_float_value("gpa", self.gpa)
-        
-
-class Entity(Parsable):
-
-    def __init__(self) -> None:
-        self._id: Optional[str] = None
-
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, new_id):
-        self._id = new_id
-
-    
-
-    @staticmethod
-    def create_from_discriminator_value(parse_node: Optional[ParseNode] = None) -> Entity:
-        """
-        Creates a new instance of the appropriate class based on discriminator value
-        Args:
-            parseNode: The parse node to use to read the discriminator value and create the object
-        Returns: Attachment
-        """
-        if not parse_node:
-            raise ValueError("parse_node cannot be undefined")
-        return Entity()
-
-    def get_field_deserializers(self) -> Dict[str, Callable[[ParseNode], None]]:
-        """Gets the deserialization information for this object.
-
-        Returns:
-            Dict[str, Callable[[ParseNode], None]]: The deserialization information for this
-            object where each entry is a property key with its deserialization callback.
-        """
-        return {
-            "id":
-            lambda n: setattr(self, 'id', n.get_uuid_value()),
-        }
-
-    def serialize(self, writer: SerializationWriter) -> None:
-        """Writes the objects properties to the current writer.
-
-        Args:
-            writer (SerializationWriter): The writer to write to.
-        """
-        if not writer:
-            raise ValueError("Writer cannot be undefined")
-        writer.write_uuid_value("id", self.id)
-

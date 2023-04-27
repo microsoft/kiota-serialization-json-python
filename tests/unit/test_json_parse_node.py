@@ -15,19 +15,19 @@ url: str = "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
 @dataclass
 class UserClass:
     odata_context: str
-    businessPhones: list[str]
-    displayName: str
-    mobilePhone: Optional[str]
-    officeLocation: str
-    updatedAt: str
+    business_phones: list[str]
+    display_name: str
+    mobile_phone: Optional[str]
+    office_location: str
+    updated_at: str
     birthday: str
-    isActive: bool
+    is_active: bool
     age: int
     gpa: float
     id: str
     
 user1 = UserClass(
-        "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+        url,
         ["+1 205 555 0108"],
         "Diego Siciliani",
         None,
@@ -38,7 +38,7 @@ user1 = UserClass(
         "8f841f30-e6e3-439a-a812-ebd369559c36"
         )
 user2 = UserClass(
-        "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+        url,
         ["425-555-0100"],
         "MOD Administrator",
         None,
