@@ -144,7 +144,7 @@ def test_get_bytes_value():
 
 
 def test_get_collection_of_enum_values():
-    parse_node = JsonParseNode("dunhill,oval")
+    parse_node = JsonParseNode(["dunhill","oval"])
     result = parse_node.get_collection_of_enum_values(OfficeLocation)
     assert isinstance(result, list)
     assert result == [OfficeLocation.Dunhill, OfficeLocation.Oval]

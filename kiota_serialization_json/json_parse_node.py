@@ -176,10 +176,13 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             List[U]: The collection of model object values of the node
         """
+        object_collection = self._json_node
+        if not object_collection:
+            return []
         return list(
             map(
                 lambda x: JsonParseNode(x).get_object_value(factory),  # type: ignore
-                self._json_node
+                object_collection
             )
         )
 
@@ -188,13 +191,10 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             List[K]: The collection of enum values
         """
-        raw_values = self.get_str_value()
-        if not raw_values:
+        enum_collection = self._json_node
+        if not enum_collection:
             return []
-
-        return list(
-            map(lambda x: JsonParseNode(x).get_enum_value(enum_class), raw_values.split(","))
-        )
+        return list(map(lambda x: JsonParseNode(x).get_enum_value(enum_class), enum_collection))
 
     def get_enum_value(self, enum_class: K) -> Optional[K]:
         """Gets the enum value of the node
