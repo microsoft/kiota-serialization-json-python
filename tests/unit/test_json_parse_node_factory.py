@@ -17,7 +17,7 @@ def test_get_root_parse_node(sample_json_string):
     sample_json_string_bytes = sample_json_string.encode('utf-8')
     root = factory.get_root_parse_node('application/json', sample_json_string_bytes)
     assert isinstance(root, JsonParseNode)
-
+    assert str(root.get_bytes_value(), "utf-8") == sample_json_string
 
 def test_get_root_parse_node_no_content_type(sample_json_string):
     with pytest.raises(Exception) as e_info:
