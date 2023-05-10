@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Fixed a bug with deserializing collection of enum values.
+
+## [0.3.2] - 2023-04-27
+
+### Added
+
+### Changed
+
 - Fixed a bug with deserializing models with additional data.
 
 ## [0.3.1] - 2023-03-20
