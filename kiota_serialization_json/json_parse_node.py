@@ -194,9 +194,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         enum_collection = self._json_node
         if not enum_collection:
             return []
-        return list(
-            map(lambda x: JsonParseNode(x).get_enum_value(enum_class), enum_collection)
-        )
+        return list(map(lambda x: JsonParseNode(x).get_enum_value(enum_class), enum_collection))
 
     def get_enum_value(self, enum_class: K) -> Optional[K]:
         """Gets the enum value of the node
