@@ -279,6 +279,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if not object_dict:
             return
 
+        if isinstance(object_dict, str):
+            object_dict = json.loads(object_dict)
+
         if isinstance(item, AdditionalDataHolder):
             item_additional_data = item.additional_data
 
