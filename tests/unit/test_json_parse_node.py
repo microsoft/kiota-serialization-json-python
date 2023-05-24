@@ -2,7 +2,7 @@ import json
 from dataclasses import asdict,dataclass
 from datetime import date, datetime, time, timedelta
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 
 import pytest
 
@@ -15,7 +15,7 @@ url: str = "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
 @dataclass
 class UserClass:
     odata_context: str
-    business_phones: list[str]
+    business_phones: List[str]
     display_name: str
     mobile_phone: Optional[str]
     office_location: str
