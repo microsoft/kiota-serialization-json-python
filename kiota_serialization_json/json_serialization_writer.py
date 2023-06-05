@@ -1,3 +1,4 @@
+from __future__ import annotations
 import base64
 import json
 from datetime import date, datetime, time, timedelta
@@ -200,33 +201,32 @@ class JsonSerializationWriter(SerializationWriter):
             return base64_string
         return None
 
-    def write_object_value(self, key: Optional[str],
-                           value: Optional[U]) -> Optional[Dict[Any, Any]]:
+    def write_object_value(
+            self,
+            key: Optional[str],
+            value: Optional[U],
+            additional_values_to_merge: Optional[List[U]]
+        ) -> Optional[Dict[Any, Any]]:
         """Writes the specified model object to the stream with an optional given key.
         Args:
             key (Optional[str]): The key to be used for the written value. May be null.
             value (Parsable): The model object to be written.
+            additional_values_to_merge (List[Parsable]): The additional values to merge to the
+            main value when serializing an intersection wrapper.
         """
-        if key and value:
-            if self._on_before_object_serialization:
-                self._on_before_object_serialization(value)
-            if self._on_start_object_serialization:
-                self._on_start_object_serialization(value, self)
+        if value or additional_values_to_merge:
             temp_writer = JsonSerializationWriter()
-            value.serialize(temp_writer)
-            if self._on_after_object_serialization:
-                self._on_after_object_serialization(value)
-            self.writer[key] = temp_writer.writer
-        elif value and not key:
-            if self._on_before_object_serialization:
-                self._on_before_object_serialization(value)
-            if self._on_start_object_serialization:
-                self._on_start_object_serialization(value, self)
-            temp_writer = JsonSerializationWriter()
-            value.serialize(temp_writer)
-            if self._on_after_object_serialization:
-                self._on_after_object_serialization(value)
-            return temp_writer.writer
+            
+            if value:
+                self._serialize_value(temp_writer, value)
+            if additional_values_to_merge:
+                for additional_value in additional_values_to_merge:
+                    self._serialize_value(temp_writer, additional_value)
+            
+            if key:       
+                self.writer[key] = temp_writer.writer
+            else:
+                return temp_writer.writer
         return None
 
     def write_enum_value(self, key: Optional[str], value: Optional[Enum]) -> Optional[str]:
@@ -399,3 +399,13 @@ class JsonSerializationWriter(SerializationWriter):
                 return self.write_non_parsable_object_value(None, value)
             raise Exception(f"Encountered an unknown type during serialization {value_type}")
         return None
+    
+    def _serialize_value(self, temp_writer: JsonSerializationWriter, value: U) :
+        if self._on_before_object_serialization:
+            self._on_before_object_serialization(value)
+        if self._on_start_object_serialization:
+            self._on_start_object_serialization(value, self)
+        value.serialize(temp_writer)
+        if self._on_after_object_serialization:
+            self._on_after_object_serialization(value) 
+    
