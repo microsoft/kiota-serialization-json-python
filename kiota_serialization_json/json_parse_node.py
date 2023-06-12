@@ -1,21 +1,14 @@
 from __future__ import annotations
 
-import base64
 import json
-import re
 import warnings
 from datetime import date, datetime, time, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 from uuid import UUID
 
 from dateutil import parser
-from kiota_abstractions.serialization import (
-    AdditionalDataHolder,
-    Parsable,
-    ParsableFactory,
-    ParseNode,
-)
+from kiota_abstractions.serialization import Parsable, ParsableFactory, ParseNode
 
 T = TypeVar("T")
 
@@ -32,18 +25,10 @@ class JsonParseNode(ParseNode, Generic[T, U]):
     def __init__(self, node: Any) -> None:
         """
         Args:
-            node (Any):The JsonElement to initialize the node with
+            node (Any): The JsonElement\
+                to initialize the node with
         """
         self._json_node = node
-
-    def get_str_value(self) -> Optional[str]:
-        """Gets the string value from the json node
-        Returns:
-            str: The string value of the node
-        """
-        if self._json_node or self._json_node == '':
-            return str(self._json_node)
-        return None
 
     def get_child_node(self, identifier: str) -> Optional[ParseNode]:
         """Gets a new parse node for the given identifier
@@ -52,43 +37,49 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             Optional[ParseNode]: A new parse node for the given identifier
         """
-        if self._json_node and self._json_node.get(identifier):
-            return JsonParseNode(self._json_node[identifier])
+        if not identifier:
+            raise ValueError("identifier cannot be None or empty.")
+
+        if isinstance(node := self._json_node, dict) and identifier in node:
+            return JsonParseNode(node[identifier])
         return None
+
+    def get_str_value(self) -> Optional[str]:
+        """Gets the string value from the json node
+        Returns:
+            str: The string value of the node
+        """
+        return self._json_node if isinstance(self._json_node, str) else None
 
     def get_bool_value(self) -> Optional[bool]:
         """Gets the boolean value of the json node
         Returns:
             bool: The boolean value of the node
         """
-        if self._json_node or self._json_node is False:
-            return bool(self._json_node)
-        return None
+        return self._json_node if isinstance(self._json_node, bool) else None
 
     def get_int_value(self) -> Optional[int]:
         """Gets the integer value of the json node
         Returns:
             int: The integer value of the node
         """
-        if self._json_node:
-            return int(self._json_node)
-        return None
+        return self._json_node if isinstance(self._json_node, int) else None
 
     def get_float_value(self) -> Optional[float]:
         """Gets the float value of the json node
         Returns:
             float: The integer value of the node
         """
-        if self._json_node:
-            return float(self._json_node)
-        return None
+        return self._json_node if isinstance(self._json_node, float) else None
 
     def get_uuid_value(self) -> Optional[UUID]:
         """Gets the UUID value of the json node
         Returns:
             UUID: The GUID value of the node
         """
-        if self._json_node:
+        if isinstance(self._json_node, UUID):
+            return self._json_node
+        if isinstance(self._json_node, str):
             return UUID(self._json_node)
         return None
 
@@ -97,10 +88,10 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             datetime: The datetime value of the node
         """
-        datetime_str = self.get_str_value()
-        if datetime_str:
-            datetime_obj = parser.parse(datetime_str)
-            return datetime_obj
+        if isinstance(self._json_node, datetime):
+            return self._json_node
+        if isinstance(self._json_node, str):
+            return parser.parse(self._json_node)
         return None
 
     def get_timedelta_value(self) -> Optional[timedelta]:
@@ -108,9 +99,10 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             timedelta: The timedelta value of the node
         """
-        datetime_str = self.get_str_value()
-        if datetime_str:
-            datetime_obj = parser.parse(datetime_str)
+        if isinstance(self._json_node, timedelta):
+            return self._json_node
+        if isinstance(self._json_node, str):
+            datetime_obj = parser.parse(self._json_node)
             return timedelta(
                 hours=datetime_obj.hour, minutes=datetime_obj.minute, seconds=datetime_obj.second
             )
@@ -121,9 +113,10 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             date: The datevalue of the node in terms on year, month, and day.
         """
-        datetime_str = self.get_str_value()
-        if datetime_str:
-            datetime_obj = parser.parse(datetime_str)
+        if isinstance(self._json_node, date):
+            return self._json_node
+        if isinstance(self._json_node, str):
+            datetime_obj = parser.parse(self._json_node)
             return datetime_obj.date()
         return None
 
@@ -132,13 +125,14 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             time: The time value of the node in terms of hour, minute, and second.
         """
-        datetime_str = self.get_str_value()
-        if datetime_str:
-            datetime_obj = parser.parse(datetime_str)
+        if isinstance(self._json_node, time):
+            return self._json_node
+        if isinstance(self._json_node, str):
+            datetime_obj = parser.parse(self._json_node)
             return datetime_obj.time()
         return None
 
-    def get_collection_of_primitive_values(self, primitive_type) -> Optional[List[T]]:
+    def get_collection_of_primitive_values(self) -> Optional[List[T]]:
         """Gets the collection of primitive values of the node
         Returns:
             List[T]: The collection of primitive values
@@ -162,7 +156,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             if generic_type == timedelta:
                 return current_parse_node.get_timedelta_value()
             if generic_type == date:
-                return current_parse_node.get_time_value()
+                return current_parse_node.get_date_value()
             if generic_type == time:
                 return current_parse_node.get_time_value()
             raise Exception(f"Encountered an unknown type during deserialization {generic_type}")
@@ -176,51 +170,51 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             List[U]: The collection of model object values of the node
         """
-        object_collection = self._json_node
-        if not object_collection:
-            return []
-        return list(
-            map(
-                lambda x: JsonParseNode(x).get_object_value(factory),  # type: ignore
-                object_collection
+        if isinstance(self._json_node, list):
+            return list(
+                map(
+                    lambda x: JsonParseNode(x).get_object_value(factory),  # type: ignore
+                    self._json_node,
+                )
             )
-        )
+        return []
 
     def get_collection_of_enum_values(self, enum_class: K) -> List[Optional[K]]:
         """Gets the collection of enum values of the json node
         Returns:
             List[K]: The collection of enum values
         """
-        enum_collection = self._json_node
-        if not enum_collection:
-            return []
-        return list(map(lambda x: JsonParseNode(x).get_enum_value(enum_class), enum_collection))
+        if isinstance(self._json_node, list):
+            return list(map(lambda x: JsonParseNode(x).get_enum_value(enum_class), self._json_node))
+        return []
 
     def get_enum_value(self, enum_class: K) -> Optional[K]:
         """Gets the enum value of the node
         Returns:
             Optional[K]: The enum value of the node
         """
-        raw_key = self.get_str_value()
+        raw_key = str(self._json_node)
+        if not raw_key:
+            return None
+
         camel_case_key = None
-        if raw_key:
-            if raw_key.lower() == "none":
-                # None is a reserved keyword in python
-                camel_case_key = "None_"
-            else:
-                camel_case_key = raw_key[0].upper() + raw_key[1:]
-        if camel_case_key:
-            try:
-                return enum_class[camel_case_key]  # type: ignore
-            except KeyError:
-                raise Exception(f'Invalid key: {camel_case_key} for enum {enum_class}.')
-        return None
+        if raw_key.lower() == "none":
+            # None is a reserved keyword in python
+            camel_case_key = "None_"
+        else:
+            camel_case_key = raw_key[0].upper() + raw_key[1:]
+
+        try:
+            return enum_class[camel_case_key]  # type: ignore
+        except KeyError:
+            raise Exception(f'Invalid key: {camel_case_key} for enum {enum_class}.')
 
     def get_object_value(self, factory: ParsableFactory) -> U:
         """Gets the model object value of the node
         Returns:
             Parsable: The model object value of the node
         """
+
         result = factory.create_from_discriminator_value(self)
         if self.on_before_assign_field_values:
             self.on_before_assign_field_values(result)
@@ -234,7 +228,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             bytearray: The bytearray value from the nodes
         """
-        base64_string = self.get_str_value()
+        base64_string = str(self._json_node)
         if not base64_string:
             return None
         return base64_string.encode("utf-8")
@@ -270,32 +264,72 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         self.on_after_assign_field_values = value
 
     def _assign_field_values(self, item: U) -> None:
+        """Assigns the field values to the model object"""
 
-        object_dict = self._json_node
-        if isinstance(object_dict, str):
-            object_dict = json.loads(object_dict)
-            
         # if object is null
-        if not object_dict:
+        if not isinstance(self._json_node, dict):
             return
-        
+
         item_additional_data = None
-        if isinstance(item, AdditionalDataHolder):
-            if item.additional_data is None:
-                item_additional_data = {}
-            else:
-                item_additional_data = item.additional_data
+        if not hasattr(item, "additional_data") or item.additional_data is None:
+            item_additional_data = {}
+        else:
+            item_additional_data = item.additional_data
 
         field_deserializers = item.get_field_deserializers()
 
-        for key, val in object_dict.items():
-            deserializer = field_deserializers.get(key)
-            if deserializer:
-                deserializer(JsonParseNode(val))
+        for field_name, field_value in self._json_node.items():
+            if field_name in field_deserializers:
+                if field_value is None:
+                    continue
+                field_deserializer = field_deserializers[field_name]
+                field_deserializer(JsonParseNode(field_value))
             elif item_additional_data is not None:
-                item_additional_data[key] = val
+                item_additional_data[field_name] = self.try_get_anything(field_value)
             else:
                 warnings.warn(
-                    f"Found additional property {key} to \
+                    f"Found additional property {field_name} to \
                     deserialize but the model doesn't support additional data"
                 )
+
+    def try_get_anything(self, value: Any) -> Any:
+        if isinstance(value, (int, float, bool)) or value is None:
+            return value
+        if isinstance(value, list):
+            return list(map(self.try_get_anything, value))
+        if isinstance(value, dict):
+            return dict(map(lambda x: (x[0], self.try_get_anything(x[1])), value.items()))
+        if isinstance(value, str):
+            try:
+                return int(value)
+            except ValueError:
+                pass
+            try:
+                return float(value)
+            except ValueError:
+                pass
+            if value.lower() == "true":
+                return True
+            if value.lower() == "false":
+                return False
+            if value.lower() == "null":
+                return None
+            try:
+                datetime_obj = parser.parse(value)
+                return timedelta(
+                    hours=datetime_obj.hour,
+                    minutes=datetime_obj.minute,
+                    seconds=datetime_obj.second
+                )
+            except ValueError:
+                pass
+            try:
+                return parser.parse(value)
+            except ValueError:
+                pass
+            try:
+                return UUID(value)
+            except ValueError:
+                pass
+            return value
+        raise ValueError(f"Unexpected additional value type {type(value)} during deserialization.")
