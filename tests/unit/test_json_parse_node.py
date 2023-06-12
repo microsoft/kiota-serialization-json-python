@@ -70,8 +70,13 @@ def test_get_timedelta_value():
 
 def test_get_collection_of_primitive_values():
     parse_node = JsonParseNode([12.1, 12.2, 12.3, 12.4, 12.5])
-    result = parse_node.get_collection_of_primitive_values()
+    result = parse_node.get_collection_of_primitive_values(float)
     assert result == [12.1, 12.2, 12.3, 12.4, 12.5]
+    
+def test_get_collection_of_primitive_values_no_type():
+    parse_node = JsonParseNode(["One", "Two", "Three", "Four", "Five"])
+    result = parse_node.get_collection_of_primitive_values(None)
+    assert result == ["One", "Two", "Three", "Four", "Five"]
 
 
 def test_get_bytes_value():

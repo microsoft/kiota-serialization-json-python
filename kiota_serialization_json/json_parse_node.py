@@ -132,14 +132,17 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             return datetime_obj.time()
         return None
 
-    def get_collection_of_primitive_values(self) -> Optional[List[T]]:
+    def get_collection_of_primitive_values(self, primitive_type: Any) -> Optional[List[T]]:
         """Gets the collection of primitive values of the node
         Returns:
             List[T]: The collection of primitive values
         """
 
         def func(item):
-            generic_type = type(item)
+            if primitive_type:
+                generic_type = primitive_type
+            else:
+                generic_type = type(item)
             current_parse_node = JsonParseNode(item)
             if generic_type == bool:
                 return current_parse_node.get_bool_value()

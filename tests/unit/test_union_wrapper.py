@@ -10,7 +10,7 @@ from ..helpers import OfficeLocation, User, User2
 from ..helpers.union_type import UnionType
 
 
-class TestIntersectionWrapperParseTests:
+class TestUnionWrapperParseTests:
 
     def test_parse_union_type_complex_property1(self):
         json_string = '{"@odata.type": "#microsoft.graph.User",\
@@ -31,7 +31,7 @@ class TestIntersectionWrapperParseTests:
         assert result.composed_type1.is_active is True
         assert str(result.composed_type1.updated_at) == '2021-07-29 03:07:25+00:00'
 
-    def test_parse_intersection_type_complex_property2(self):
+    def test_parse_union_type_complex_property2(self):
         json_string = '{"@odata.type": "#microsoft.graph.User2", "id": 43,\
             "display_name": "John Doe", "age": 32, "gpa": 3.9}'
 

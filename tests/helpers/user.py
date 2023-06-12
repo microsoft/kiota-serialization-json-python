@@ -56,7 +56,7 @@ class User(Parsable, AdditionalDataHolder):
             "birthday":
             lambda n: setattr(self, 'birthday', n.get_date_value()),
             "business_phones":
-            lambda n: setattr(self, 'business_phones', n.get_collection_of_primitive_values()),
+            lambda n: setattr(self, 'business_phones', n.get_collection_of_primitive_values(str)),
             "mobile_phone":
             lambda n: setattr(self, 'mobile_phone', n.get_str_value()),
             "is_active":
