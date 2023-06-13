@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Callable, Dict, List, Optional, TypeVar
+from typing import Any, Callable, Dict, List, Optional, TypeVar
 from uuid import UUID
 
 from kiota_abstractions.serialization import (
@@ -19,6 +19,7 @@ T = TypeVar('T')
 
 @dataclass
 class User(Parsable, AdditionalDataHolder):
+    additional_data: Dict[str, Any] = field(default_factory=dict)
     id: Optional[UUID] = None
     office_location: Optional[OfficeLocation] = None
     updated_at: Optional[datetime] = None

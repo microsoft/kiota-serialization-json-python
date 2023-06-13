@@ -1,16 +1,22 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Callable, Dict, List, Optional
 
-from kiota_abstractions.serialization import Parsable, ParseNode, SerializationWriter
+from kiota_abstractions.serialization import (
+    AdditionalDataHolder,
+    Parsable,
+    ParseNode,
+    SerializationWriter,
+)
 from kiota_abstractions.serialization.parse_node_helper import ParseNodeHelper
 
 from . import User, User2
 
 
 @dataclass
-class InterSectionType(Parsable):
+class InterSectionType(AdditionalDataHolder, Parsable):
+    additional_data: Dict[str, Any] = field(default_factory=dict)
     composed_type1: Optional[User] = None
     composed_type2: Optional[User2] = None
     string_value: Optional[str] = None

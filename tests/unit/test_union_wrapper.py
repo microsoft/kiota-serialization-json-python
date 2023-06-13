@@ -23,6 +23,7 @@ class TestUnionWrapperParseTests:
         result = parse_node.get_object_value(UnionType)
 
         assert result.composed_type1
+        assert result.additional_data == {"@odata.type": "#microsoft.graph.User"}
         assert not result.composed_type2
         assert not result.composed_type3
         assert not result.string_value
@@ -39,6 +40,7 @@ class TestUnionWrapperParseTests:
         result = parse_node.get_object_value(UnionType)
 
         assert not result.composed_type1
+        assert result.additional_data == {"@odata.type": "#microsoft.graph.User2"}
         assert result.composed_type2
         assert not result.composed_type3
         assert not result.string_value

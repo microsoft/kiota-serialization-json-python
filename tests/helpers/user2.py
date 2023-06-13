@@ -11,6 +11,7 @@ T = TypeVar('T')
 
 @dataclass
 class User2():
+    additional_data: Dict[str, Any] = field(default_factory=dict)
     id: Optional[int] = None
     display_name: Optional[str] = None
     age: Optional[int] = None
