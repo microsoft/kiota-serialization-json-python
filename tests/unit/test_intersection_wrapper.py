@@ -25,7 +25,7 @@ def test_parse_intersection_type_complex_property1():
     assert not result.string_value
     assert result.composed_type1.id == UUID("8f841f30-e6e3-439a-a812-ebd369559c36")
     assert result.composed_type1.office_location == OfficeLocation.Dunhill
-    assert result.composed_type2.display_name == "John Doe"
+    assert result.composed_type2.display_name == display_name
     assert result.composed_type2.age == 32
 
 
@@ -74,7 +74,7 @@ def test_parse_intersection_type_string_value():
     assert not result.composed_type2
     assert not result.composed_type3
     assert result.string_value
-    assert result.string_value == "John Doe"
+    assert result.string_value == display_name
 
 
 def test_serializes_intersection_type_string_value():

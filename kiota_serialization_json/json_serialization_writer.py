@@ -379,7 +379,7 @@ class JsonSerializationWriter(SerializationWriter):
                 elif hasattr(value, '__dict__'):
                     self.write_non_parsable_object_value(key, value)
                 else:
-                    raise Exception(
+                    raise TypeError(
                         f"Encountered an unknown type during serialization {value_type} \
                             with key {key}"
                     )
@@ -392,7 +392,7 @@ class JsonSerializationWriter(SerializationWriter):
                 elif hasattr(value, '__dict__'):
                     self.write_non_parsable_object_value(None, value)
                 else:
-                    raise Exception(
+                    raise TypeError(
                         f"Encountered an unknown type during serialization {value_type}"
                     )
 
