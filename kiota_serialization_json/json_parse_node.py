@@ -138,30 +138,14 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             List[T]: The collection of primitive values
         """
 
+        primitive_types = {bool, str, int, float, UUID, datetime, timedelta, date, time, bytes}
+
         def func(item):
-            if primitive_type:
-                generic_type = primitive_type
-            else:
-                generic_type = type(item)
+            generic_type = primitive_type if primitive_type else type(item)
             current_parse_node = JsonParseNode(item)
-            if generic_type == bool:
-                return current_parse_node.get_bool_value()
-            if generic_type == str:
-                return current_parse_node.get_str_value()
-            if generic_type == int:
-                return current_parse_node.get_int_value()
-            if generic_type == float:
-                return current_parse_node.get_float_value()
-            if generic_type == UUID:
-                return current_parse_node.get_uuid_value()
-            if generic_type == datetime:
-                return current_parse_node.get_datetime_value()
-            if generic_type == timedelta:
-                return current_parse_node.get_timedelta_value()
-            if generic_type == date:
-                return current_parse_node.get_date_value()
-            if generic_type == time:
-                return current_parse_node.get_time_value()
+            if generic_type in primitive_types:
+                method = getattr(current_parse_node, f'get_{generic_type.__name__.lower()}_value')
+                return method()
             raise Exception(f"Encountered an unknown type during deserialization {generic_type}")
 
         if isinstance(self._json_node, str):
@@ -303,20 +287,6 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(value, dict):
             return dict(map(lambda x: (x[0], self.try_get_anything(x[1])), value.items()))
         if isinstance(value, str):
-            try:
-                return int(value)
-            except ValueError:
-                pass
-            try:
-                return float(value)
-            except ValueError:
-                pass
-            if value.lower() == "true":
-                return True
-            if value.lower() == "false":
-                return False
-            if value.lower() == "null":
-                return None
             try:
                 datetime_obj = parser.parse(value)
                 return timedelta(

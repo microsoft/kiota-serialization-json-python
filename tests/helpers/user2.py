@@ -26,7 +26,7 @@ class User2():
         Returns: Attachment
         """
         if not parse_node:
-            raise Exception("parse_node cannot be undefined")
+            raise TypeError("parse_node cannot be null")
         return User2()
 
     def get_field_deserializers(self) -> Dict[str, Callable[[ParseNode], None]]:
@@ -50,7 +50,7 @@ class User2():
             writer (SerializationWriter): The writer to write to.
         """
         if not writer:
-            raise Exception("Writer cannot be undefined")
+            raise TypeError("Writer cannot be null")
         writer.write_int_value("id", self.id)
         writer.write_str_value("display_name", self.display_name)
         writer.write_int_value("age", self.age)

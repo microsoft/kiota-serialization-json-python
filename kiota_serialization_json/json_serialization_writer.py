@@ -226,24 +226,16 @@ class JsonSerializationWriter(SerializationWriter):
             temp_writer = JsonSerializationWriter()
 
             if value:
-                if self._on_before_object_serialization:
-                    self._on_before_object_serialization(value)
-                if self._on_start_object_serialization:
-                    self._on_start_object_serialization(value, self)
-                value.serialize(temp_writer)
+                self._serialize_value(temp_writer, value)
 
             if additional_values_to_merge:
                 for additional_value in filter(lambda x: x is not None, additional_values_to_merge):
-                    if self._on_before_object_serialization:
-                        self._on_before_object_serialization(additional_value)
-                    if self._on_start_object_serialization:
-                        self._on_start_object_serialization(additional_value, self)
-                    additional_value.serialize(temp_writer)
+                    self._serialize_value(temp_writer, additional_value)
                     if self._on_after_object_serialization:
                         self._on_after_object_serialization(additional_value)
-            if value:
-                if self._on_after_object_serialization:
-                    self._on_after_object_serialization(value)
+
+            if value and self._on_after_object_serialization:
+                self._on_after_object_serialization(value)
 
             if key:
                 self.writer[key] = temp_writer.writer
@@ -410,5 +402,3 @@ class JsonSerializationWriter(SerializationWriter):
         if self._on_start_object_serialization:
             self._on_start_object_serialization(value, self)
         value.serialize(temp_writer)
-        if self._on_after_object_serialization:
-            self._on_after_object_serialization(value)

@@ -37,7 +37,7 @@ class User(Parsable, AdditionalDataHolder):
         Returns: Attachment
         """
         if not parse_node:
-            raise Exception("parse_node cannot be undefined")
+            raise TypeError("parse_node cannot be null")
         return User()
 
     def get_field_deserializers(self) -> Dict[str, Callable[[ParseNode], None]]:
@@ -71,7 +71,7 @@ class User(Parsable, AdditionalDataHolder):
             writer (SerializationWriter): The writer to write to.
         """
         if not writer:
-            raise Exception("Writer cannot be undefined")
+            raise TypeError("Writer cannot be null")
         writer.write_uuid_value("id", self.id)
         writer.write_enum_value("office_location", self.office_location)
         writer.write_datetime_value("updated_at", self.updated_at)

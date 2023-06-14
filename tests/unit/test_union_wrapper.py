@@ -9,6 +9,8 @@ from kiota_serialization_json.json_serialization_writer import JsonSerialization
 from ..helpers import OfficeLocation, User, User2
 from ..helpers.union_type import UnionType
 
+display_name = "John Doe"
+
 
 class TestUnionWrapperParseTests:
 
@@ -45,7 +47,7 @@ class TestUnionWrapperParseTests:
         assert not result.composed_type3
         assert not result.string_value
         assert result.composed_type2.id == 43
-        assert result.composed_type2.display_name == "John Doe"
+        assert result.composed_type2.display_name == display_name
         assert result.composed_type2.age == 32
         assert result.composed_type2.gpa == 3.9
 
@@ -67,7 +69,7 @@ class TestUnionWrapperParseTests:
         assert result.composed_type3[0].office_location == OfficeLocation.Dunhill
 
     def test_parse_union_type_string_value(self):
-        json_string = '"John Doe"'
+        json_string = json.dumps(display_name)
         parse_node = JsonParseNode(json.loads(json_string))
         result = parse_node.get_object_value(UnionType)
 
@@ -75,23 +77,23 @@ class TestUnionWrapperParseTests:
         assert not result.composed_type2
         assert not result.composed_type3
         assert result.string_value
-        assert result.string_value == "John Doe"
+        assert result.string_value == display_name
 
     def test_serializes_union_type_string_value(self):
         writer = JsonSerializationWriter()
-        model = UnionType(string_value="John Doe")
+        model = UnionType(string_value=display_name)
         model.serialize(writer)
 
         content = writer.get_serialized_content()
         content_string = content.decode('utf-8')
-        assert content_string == '"John Doe"'
+        assert content_string == json.dumps(display_name)
 
     def test_serializes_union_type_composed_type1(self):
         writer = JsonSerializationWriter()
         composed_type1 = User(
             id=UUID("8f841f30-e6e3-439a-a812-ebd369559c36"), office_location=OfficeLocation.Dunhill
         )
-        composed_type2 = User2(display_name="John Doe", age=32)
+        composed_type2 = User2(display_name=display_name, age=32)
         model = UnionType(composed_type1=composed_type1, composed_type2=composed_type2)
         model.serialize(writer)
 
@@ -102,7 +104,7 @@ class TestUnionWrapperParseTests:
 
     def test_serializes_union_type_complex_property2(self):
         writer = JsonSerializationWriter()
-        composed_type2 = User2(id=1, display_name="John Doe", age=32)
+        composed_type2 = User2(id=1, display_name=display_name, age=32)
         model = UnionType(composed_type2=composed_type2)
         model.serialize(writer)
 

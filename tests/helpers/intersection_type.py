@@ -31,7 +31,7 @@ class InterSectionType(AdditionalDataHolder, Parsable):
         Returns: Attachment
         """
         if not parse_node:
-            raise Exception("parse_node cannot be undefined")
+            raise TypeError("parse_node cannot be null")
 
         result = InterSectionType()
         if isinstance(string_value := parse_node.get_str_value(), str):
@@ -65,7 +65,7 @@ class InterSectionType(AdditionalDataHolder, Parsable):
             writer (SerializationWriter): The writer to write to.
         """
         if not writer:
-            raise Exception("Writer cannot be undefined")
+            raise TypeError("Writer cannot be null")
         if self.string_value:
             writer.write_str_value(None, self.string_value)
         elif self.composed_type3:

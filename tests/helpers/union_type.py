@@ -26,7 +26,7 @@ class UnionType(Parsable):
         Returns: Attachment
         """
         if not parse_node:
-            raise Exception("parse_node cannot be undefined")
+            raise TypeError("parse_node cannot be null")
 
         result = UnionType()
         mapping_value_node = parse_node.get_child_node("@odata.type")
@@ -65,7 +65,7 @@ class UnionType(Parsable):
             writer (SerializationWriter): The writer to write to.
         """
         if not writer:
-            raise Exception("Writer cannot be undefined")
+            raise TypeError("Writer cannot be null")
 
         if self.composed_type1:
             writer.write_object_value(None, self.composed_type1)
