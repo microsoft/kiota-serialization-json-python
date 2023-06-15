@@ -34,10 +34,9 @@ class InterSectionType(AdditionalDataHolder, Parsable):
             raise TypeError("parse_node cannot be null")
 
         result = InterSectionType()
-        if isinstance(string_value := parse_node.get_str_value(), str):
+        if string_value := parse_node.get_str_value():
             result.string_value = string_value
-        elif len(values := parse_node.get_collection_of_object_values(User)
-                 ) > 0 and all(isinstance(item, User) for item in values):
+        elif values := parse_node.get_collection_of_object_values(User):
             result.composed_type3 = values
         else:
             result.composed_type1 = User()

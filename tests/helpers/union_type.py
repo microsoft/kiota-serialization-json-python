@@ -28,19 +28,18 @@ class UnionType(Parsable):
         if not parse_node:
             raise TypeError("parse_node cannot be null")
 
+        try:
+            mapping_value = parse_node.get_child_node("@odata.type").get_str_value()
+        except AttributeError:
+            mapping_value = None
         result = UnionType()
-        mapping_value_node = parse_node.get_child_node("@odata.type")
-        if mapping_value_node:
-            mapping_value = mapping_value_node.get_str_value()
-            if mapping_value == "#microsoft.graph.User":
-                result.composed_type1 = User()
-            elif mapping_value == "#microsoft.graph.User2":
-                result.composed_type2 = User2()
-        elif isinstance(string_value := parse_node.get_str_value(), str):
+        if mapping_value and mapping_value.casefold() == "#microsoft.graph.User".casefold():
+            result.composed_type1 = User()
+        elif mapping_value and mapping_value.casefold() == "#microsoft.graph.User2".casefold():
+            result.composed_type2 = User2()
+        elif string_value := parse_node.get_str_value():
             result.string_value = string_value
-        elif isinstance(
-            values := parse_node.get_collection_of_object_values(User), list
-        ) and values:
+        elif values := parse_node.get_collection_of_object_values(User):
             result.composed_type3 = values
         return result
 
