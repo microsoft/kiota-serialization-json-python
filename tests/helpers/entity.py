@@ -1,26 +1,16 @@
 from __future__ import annotations
-from typing import Callable, Dict, Optional
 
-from kiota_abstractions.serialization import (
-    Parsable,
-    ParseNode,
-    SerializationWriter,
-)
-        
+from dataclasses import dataclass
+from typing import Callable, Dict, Optional
+from uuid import UUID
+
+from kiota_abstractions.serialization import Parsable, ParseNode, SerializationWriter
+
+
+@dataclass
 class Entity(Parsable):
 
-    def __init__(self) -> None:
-        self._id: Optional[str] = None
-
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, new_id):
-        self._id = new_id
-
-    
+    id: Optional[UUID] = None
 
     @staticmethod
     def create_from_discriminator_value(parse_node: Optional[ParseNode] = None) -> Entity:
@@ -42,8 +32,7 @@ class Entity(Parsable):
             object where each entry is a property key with its deserialization callback.
         """
         return {
-            "id":
-            lambda n: setattr(self, 'id', n.get_uuid_value()),
+            "id": lambda n: setattr(self, 'id', n.get_uuid_value()),
         }
 
     def serialize(self, writer: SerializationWriter) -> None:
@@ -55,4 +44,3 @@ class Entity(Parsable):
         if not writer:
             raise ValueError("Writer cannot be undefined")
         writer.write_uuid_value("id", self.id)
-

@@ -2,27 +2,25 @@ from uuid import UUID
 
 import pytest
 from dateutil import parser
-from kiota_abstractions.serialization import Parsable, SerializationWriter
 
 from kiota_serialization_json.json_serialization_writer import JsonSerializationWriter
 
-from ..helpers import OfficeLocation, User
+from ..helpers import OfficeLocation, User, User2
 
 
 @pytest.fixture
 def user_1():
     user = User()
-    user.age = 31
+    user.updated_at = parser.parse("2022-01-27T12:59:45.596117")
     user.is_active = True
-    user.display_name = "Jane Doe"
+    user.id = UUID("8f841f30-e6e3-439a-a812-ebd369559c36")
     return user
 
 
 @pytest.fixture
 def user_2():
-    user = User()
+    user = User2()
     user.age = 32
-    user.is_active = False
     user.display_name = "John Doe"
     return user
 
@@ -37,8 +35,10 @@ def test_write_str_value():
 
 def test_write_string_value_no_key():
     json_serialization_writer = JsonSerializationWriter()
-    value = json_serialization_writer.write_str_value(None, "Adele Vance")
-    assert value == "Adele Vance"
+    json_serialization_writer.write_str_value(None, "Adele Vance")
+    content = json_serialization_writer.get_serialized_content()
+    content_string = content.decode('utf-8')
+    assert content_string == '"Adele Vance"'
 
 
 def test_write_bool_value():
@@ -128,7 +128,9 @@ def test_write_collection_of_object_values(user_1, user_2):
     json_serialization_writer.write_collection_of_object_values("users", [user_1, user_2])
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"users": [{"display_name": "Jane Doe", "is_active": true, "age": 31}, {"display_name": "John Doe", "is_active": false, "age": 32}]}'
+    assert content_string == '{"users": [{"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
+        '"updated_at": "2022-01-27T12:59:45.596117", "is_active": true}, '\
+        '{"display_name": "John Doe", "age": 32}]}'
 
 
 def test_write_collection_of_enum_values():
@@ -138,7 +140,7 @@ def test_write_collection_of_enum_values():
     )
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"officeLocation": "Dunhill,Oval"}'
+    assert content_string == '{"officeLocation": ["dunhill", "oval"]}'
 
 
 def test_write_object_value(user_1):
@@ -146,7 +148,8 @@ def test_write_object_value(user_1):
     json_serialization_writer.write_object_value("user1", user_1)
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"user1": {"display_name": "Jane Doe", "is_active": true, "age": 31}}'
+    assert content_string == '{"user1": {"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
+        '"updated_at": "2022-01-27T12:59:45.596117", "is_active": true}}'
 
 
 def test_write_enum_value():
@@ -154,7 +157,7 @@ def test_write_enum_value():
     json_serialization_writer.write_enum_value("officeLocation", OfficeLocation.Dunhill)
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"officeLocation": "Dunhill"}'
+    assert content_string == '{"officeLocation": "dunhill"}'
 
 
 def test_write_null_value():
@@ -175,4 +178,6 @@ def test_write_additional_data_value():
     )
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity", "businessPhones": ["+1 205 555 0108"]}'
+    assert content_string == '{"@odata.context": '\
+        '"https://graph.microsoft.com/v1.0/$metadata#users/$entity", '\
+            '"businessPhones": ["+1 205 555 0108"]}'
