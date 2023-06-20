@@ -43,5 +43,5 @@ typing-extensions==4.6.3
 uritemplate==4.1.1
 urllib3==2.0.3
 wrapt==1.15.0
-yapf==0.40.0
+yapf==0.40.1
 zipp==3.15.0; python_version >= '3.7'
