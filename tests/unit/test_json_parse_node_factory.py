@@ -8,7 +8,7 @@ from kiota_serialization_json.json_parse_node_factory import JsonParseNodeFactor
 
 @pytest.fixture
 def sample_json_string():
-    return '{"name":"Tesla", "age":2, "city":"New York"}'
+    return '{"name": "Tesla", "age": 2, "city": "New York"}'
 
 
 def test_get_root_parse_node(sample_json_string):

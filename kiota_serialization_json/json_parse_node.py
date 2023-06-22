@@ -215,7 +215,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         Returns:
             bytearray: The bytearray value from the nodes
         """
-        base64_string = str(self._json_node)
+        base64_string = json.dumps(self._json_node)
         if not base64_string:
             return None
         return base64_string.encode("utf-8")
