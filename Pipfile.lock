@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7da2b2b5b7679b9c55cc180ba16d69712289937c2ad5426a767c095584712661"
+            "sha256": "f394e198aac45aa0a308b59aa6f66a056f363afa894dc7616823edfec2a27614"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -312,11 +312,11 @@
         },
         "microsoft-kiota-abstractions": {
             "hashes": [
-                "sha256:27152023d0a4c3ad2dba52240f5fd3c7276942c7f85f4bab34f16dac4bb71dc4",
-                "sha256:590e3f3f2c8e1d7c525c107bece4afa48faedcf02409f2fc828456cb35fa19fe"
+                "sha256:3ecce255a5b840917d133e80388544c184cf205992f56812eb3d76e0a9bf6716",
+                "sha256:be169fcc2c5cff4873ef108f1b0d8015f44df86d018ddd973fc74cc1e3bcbb66"
             ],
             "index": "pypi",
-            "version": "==0.5.4"
+            "version": "==0.5.5"
         },
         "mypy": {
             "hashes": [
