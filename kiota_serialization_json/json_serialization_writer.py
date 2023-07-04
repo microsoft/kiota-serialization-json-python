@@ -208,7 +208,7 @@ class JsonSerializationWriter(SerializationWriter):
             base64_bytes = base64.b64encode(value)
             base64_string = base64_bytes.decode('utf-8')
             if key:
-                self.writer['key'] = base64_string
+                self.writer[key] = base64_string
             else:
                 self.value = base64_string
 
