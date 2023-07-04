@@ -13,7 +13,7 @@ colorama = "==0.4.6"
 coverage = {version = "==7.2.7", extras = ["toml"]}
 dill = "==0.3.6"
 docutils = "==0.20.1"
-exceptiongroup = "==1.1.1"
+exceptiongroup = "==1.1.2"
 flit = "==3.9.0"
 flit-core = "==3.9.0"
 idna = "==3.4"
