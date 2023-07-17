@@ -26,7 +26,7 @@ microsoft-kiota-abstractions==0.6.0
 mypy-extensions==1.0.0
 mypy==1.4.1
 packaging==23.1
-platformdirs==3.8.1
+platformdirs==3.9.1
 pluggy==1.2.0
 pylint==2.17.4
 pytest-cov==4.1.0
