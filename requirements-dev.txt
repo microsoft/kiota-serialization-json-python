@@ -41,7 +41,7 @@ tomlkit==0.11.8
 types-python-dateutil==2.8.19.13
 typing-extensions==4.7.1
 uritemplate==4.1.1
-urllib3==2.0.3
+urllib3==2.0.4
 wrapt==1.15.0
 yapf==0.40.1
 zipp==3.16.2; python_version >= '3.8'
