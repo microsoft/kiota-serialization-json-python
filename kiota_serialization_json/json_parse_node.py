@@ -171,7 +171,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             List[K]: The collection of enum values
         """
         if isinstance(self._json_node, list):
-            return list(map(lambda x: self._create_new_node(x).get_enum_value(enum_class), self._json_node))
+            return list(
+                map(lambda x: self._create_new_node(x).get_enum_value(enum_class), self._json_node)
+            )
         return []
 
     def get_enum_value(self, enum_class: K) -> Optional[K]:
@@ -226,7 +228,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             Callable[[Parsable], None]: the callback called before the node is deserialized.
         """
         return self._on_before_assign_field_values
-    
+
     @on_before_assign_field_values.setter
     def on_before_assign_field_values(self, value: Callable[[Parsable], None]) -> None:
         """Sets the callback called before the node is deserialized.
@@ -309,9 +311,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                 pass
             return value
         raise ValueError(f"Unexpected additional value type {type(value)} during deserialization.")
-    
+
     def _create_new_node(self, node: Any) -> JsonParseNode:
-        new_node = JsonParseNode(node)
+        new_node: JsonParseNode = JsonParseNode(node)
         new_node.on_before_assign_field_values = self.on_before_assign_field_values
         new_node.on_after_assign_field_values = self.on_after_assign_field_values
         return new_node

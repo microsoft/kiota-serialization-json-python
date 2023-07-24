@@ -20,8 +20,9 @@ class JsonSerializationWriter(SerializationWriter):
     def __init__(self) -> None:
         self.writer: Dict = {}
         self.value: Any = None
-        
-        self._on_start_object_serialization: Optional[Callable[[Parsable, SerializationWriter], None]] = None
+
+        self._on_start_object_serialization: Optional[Callable[[Parsable, SerializationWriter],
+                                                               None]] = None
         self._on_before_object_serialization: Optional[Callable[[Parsable], None]] = None
         self._on_after_object_serialization: Optional[Callable[[Parsable], None]] = None
 
@@ -300,6 +301,15 @@ class JsonSerializationWriter(SerializationWriter):
         """
         return self._on_before_object_serialization
 
+    @on_before_object_serialization.setter
+    def on_before_object_serialization(self, value: Optional[Callable[[Parsable], None]]) -> None:
+        """Sets the callback called before the objects gets serialized.
+        Args:
+            value (Optional[Callable[[Parsable], None]]): the callback called before the objects
+            gets serialized.
+        """
+        self._on_before_object_serialization = value
+
     @property
     def on_after_object_serialization(self) -> Optional[Callable[[Parsable], None]]:
         """Gets the callback called after the object gets serialized.
@@ -308,6 +318,15 @@ class JsonSerializationWriter(SerializationWriter):
             gets serialized.
         """
         return self._on_after_object_serialization
+
+    @on_after_object_serialization.setter
+    def on_after_object_serialization(self, value: Optional[Callable[[Parsable], None]]) -> None:
+        """Sets the callback called after the objects gets serialized.
+        Args:
+            value (Optional[Callable[[Parsable], None]]): the callback called after the objects
+            gets serialized.
+        """
+        self._on_after_object_serialization = value
 
     @property
     def on_start_object_serialization(
@@ -319,28 +338,6 @@ class JsonSerializationWriter(SerializationWriter):
             right after the serialization process starts.
         """
         return self._on_start_object_serialization
-
-    @on_before_object_serialization.setter
-    def on_before_object_serialization(
-        self, value: Optional[Callable[[Parsable], None]]
-    ) -> None:
-        """Sets the callback called before the objects gets serialized.
-        Args:
-            value (Optional[Callable[[Parsable], None]]): the callback called before the objects
-            gets serialized.
-        """
-        self._on_before_object_serialization = value
-
-    @on_after_object_serialization.setter
-    def on_after_object_serialization(
-        self, value: Optional[Callable[[Parsable], None]]
-    ) -> None:
-        """Sets the callback called after the objects gets serialized.
-        Args:
-            value (Optional[Callable[[Parsable], None]]): the callback called after the objects
-            gets serialized.
-        """
-        self._on_after_object_serialization = value
 
     @on_start_object_serialization.setter
     def on_start_object_serialization(
@@ -406,7 +403,7 @@ class JsonSerializationWriter(SerializationWriter):
         if on_start := self.on_start_object_serialization:
             on_start(value, self)
         value.serialize(temp_writer)
-        
+
     def _create_new_writer(self) -> SerializationWriter:
         writer = JsonSerializationWriter()
         writer.on_before_object_serialization = self.on_before_object_serialization
