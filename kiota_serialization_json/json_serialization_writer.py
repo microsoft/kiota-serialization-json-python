@@ -17,15 +17,14 @@ class JsonSerializationWriter(SerializationWriter):
 
     PROPERTY_SEPARATOR: str = ','
 
-    _on_start_object_serialization: Optional[Callable[[Parsable, SerializationWriter], None]] = None
-
-    _on_before_object_serialization: Optional[Callable[[Parsable], None]] = None
-
-    _on_after_object_serialization: Optional[Callable[[Parsable], None]] = None
-
     def __init__(self) -> None:
         self.writer: Dict = {}
         self.value: Any = None
+
+        self._on_start_object_serialization: Optional[Callable[[Parsable, SerializationWriter],
+                                                               None]] = None
+        self._on_before_object_serialization: Optional[Callable[[Parsable], None]] = None
+        self._on_after_object_serialization: Optional[Callable[[Parsable], None]] = None
 
     def write_str_value(self, key: Optional[str], value: Optional[str]) -> None:
         """Writes the specified string value to the stream with an optional given key.
@@ -147,7 +146,7 @@ class JsonSerializationWriter(SerializationWriter):
         if isinstance(values, list):
             result = []
             for val in values:
-                temp_writer = JsonSerializationWriter()
+                temp_writer = self._create_new_writer()
                 temp_writer.write_any_value(None, val)
                 result.append(temp_writer.value)
 
@@ -168,7 +167,7 @@ class JsonSerializationWriter(SerializationWriter):
         if isinstance(values, list):
             obj_list = []
             for val in values:
-                temp_writer = JsonSerializationWriter()
+                temp_writer = self._create_new_writer()
                 temp_writer.write_object_value(None, val)
                 obj_list.append(temp_writer.value)
 
@@ -188,7 +187,7 @@ class JsonSerializationWriter(SerializationWriter):
         if isinstance(values, list):
             result = []
             for val in values:
-                temp_writer = JsonSerializationWriter()
+                temp_writer = self._create_new_writer()
                 temp_writer.write_enum_value(None, val)
                 result.append(temp_writer.value)
 
@@ -223,7 +222,7 @@ class JsonSerializationWriter(SerializationWriter):
             main value when serializing an intersection wrapper.
         """
         if value or additional_values_to_merge:
-            temp_writer = JsonSerializationWriter()
+            temp_writer = self._create_new_writer()
 
             if value:
                 self._serialize_value(temp_writer, value)
@@ -231,8 +230,8 @@ class JsonSerializationWriter(SerializationWriter):
             if additional_values_to_merge:
                 for additional_value in filter(lambda x: x is not None, additional_values_to_merge):
                     self._serialize_value(temp_writer, additional_value)
-                    if self._on_after_object_serialization:
-                        self._on_after_object_serialization(additional_value)
+                    if on_after := self.on_after_object_serialization:
+                        on_after(additional_value)
 
             if value and self._on_after_object_serialization:
                 self._on_after_object_serialization(value)
@@ -278,7 +277,7 @@ class JsonSerializationWriter(SerializationWriter):
         Returns:
             bytes: The value of the serialized content.
         """
-        if self.writer and self.value is not None:
+        if self.writer and self.value:
             # Json output is invalid if it has a mix of values
             # and key-value pairs.
             raise ValueError("Invalid Json output")
@@ -293,7 +292,8 @@ class JsonSerializationWriter(SerializationWriter):
         stream = json_string.encode('utf-8')
         return stream
 
-    def get_on_before_object_serialization(self) -> Optional[Callable[[Parsable], None]]:
+    @property
+    def on_before_object_serialization(self) -> Optional[Callable[[Parsable], None]]:
         """Gets the callback called before the object gets serialized.
         Returns:
             Optional[Callable[[Parsable], None]]:the callback called before the object
@@ -301,7 +301,17 @@ class JsonSerializationWriter(SerializationWriter):
         """
         return self._on_before_object_serialization
 
-    def get_on_after_object_serialization(self) -> Optional[Callable[[Parsable], None]]:
+    @on_before_object_serialization.setter
+    def on_before_object_serialization(self, value: Optional[Callable[[Parsable], None]]) -> None:
+        """Sets the callback called before the objects gets serialized.
+        Args:
+            value (Optional[Callable[[Parsable], None]]): the callback called before the objects
+            gets serialized.
+        """
+        self._on_before_object_serialization = value
+
+    @property
+    def on_after_object_serialization(self) -> Optional[Callable[[Parsable], None]]:
         """Gets the callback called after the object gets serialized.
         Returns:
             Optional[Optional[Callable[[Parsable], None]]]: the callback called after the object
@@ -309,7 +319,17 @@ class JsonSerializationWriter(SerializationWriter):
         """
         return self._on_after_object_serialization
 
-    def get_on_start_object_serialization(
+    @on_after_object_serialization.setter
+    def on_after_object_serialization(self, value: Optional[Callable[[Parsable], None]]) -> None:
+        """Sets the callback called after the objects gets serialized.
+        Args:
+            value (Optional[Callable[[Parsable], None]]): the callback called after the objects
+            gets serialized.
+        """
+        self._on_after_object_serialization = value
+
+    @property
+    def on_start_object_serialization(
         self
     ) -> Optional[Callable[[Parsable, SerializationWriter], None]]:
         """Gets the callback called right after the serialization process starts.
@@ -319,27 +339,8 @@ class JsonSerializationWriter(SerializationWriter):
         """
         return self._on_start_object_serialization
 
-    def set_on_before_object_serialization(
-        self, value: Optional[Callable[[Parsable], None]]
-    ) -> None:
-        """Sets the callback called before the objects gets serialized.
-        Args:
-            value (Optional[Callable[[Parsable], None]]): the callback called before the objects
-            gets serialized.
-        """
-        self._on_before_object_serialization = value
-
-    def set_on_after_object_serialization(
-        self, value: Optional[Callable[[Parsable], None]]
-    ) -> None:
-        """Sets the callback called after the objects gets serialized.
-        Args:
-            value (Optional[Callable[[Parsable], None]]): the callback called after the objects
-            gets serialized.
-        """
-        self._on_after_object_serialization = value
-
-    def set_on_start_object_serialization(
+    @on_start_object_serialization.setter
+    def on_start_object_serialization(
         self, value: Optional[Callable[[Parsable, SerializationWriter], None]]
     ) -> None:
         """Sets the callback called right after the serialization process starts.
@@ -397,8 +398,15 @@ class JsonSerializationWriter(SerializationWriter):
                     )
 
     def _serialize_value(self, temp_writer: JsonSerializationWriter, value: U):
-        if self._on_before_object_serialization:
-            self._on_before_object_serialization(value)
-        if self._on_start_object_serialization:
-            self._on_start_object_serialization(value, self)
+        if on_before := self.on_before_object_serialization:
+            on_before(value)
+        if on_start := self.on_start_object_serialization:
+            on_start(value, self)
         value.serialize(temp_writer)
+
+    def _create_new_writer(self) -> SerializationWriter:
+        writer = JsonSerializationWriter()
+        writer.on_before_object_serialization = self.on_before_object_serialization
+        writer.on_after_object_serialization = self.on_after_object_serialization
+        writer.on_start_object_serialization = self.on_start_object_serialization
+        return writer

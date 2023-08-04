@@ -23,23 +23,22 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pipenv
-          pipenv install -r requirements-dev.txt
+          pip install -r requirements-dev.txt
       - name: Check code format
         run: |
-          pipenv run yapf -dr kiota_serialization_json
+          yapf -dr kiota_serialization_json
       - name: Check import order
         run: |
-          pipenv run isort kiota_serialization_json
+          isort kiota_serialization_json
       - name: Lint with Pylint
         run: |
-          pipenv run pylint kiota_serialization_json --disable=W --rcfile=.pylintrc
+          pylint kiota_serialization_json --disable=W --rcfile=.pylintrc
       - name: Static type checking with Mypy
         run: |
-          pipenv run mypy kiota_serialization_json
+          mypy kiota_serialization_json
       - name: Run tests with Pytest
         run: |
-          pipenv run pytest
+          pytest
 
   publish:
     name: Publish distribution to PyPI

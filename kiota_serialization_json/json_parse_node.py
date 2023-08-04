@@ -19,9 +19,6 @@ K = TypeVar("K", bound=Enum)
 
 class JsonParseNode(ParseNode, Generic[T, U]):
 
-    on_before_assign_field_values: Optional[Callable[[Parsable], None]] = None
-    on_after_assign_field_values: Optional[Callable[[Parsable], None]] = None
-
     def __init__(self, node: Any) -> None:
         """
         Args:
@@ -29,6 +26,8 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                 to initialize the node with
         """
         self._json_node = node
+        self._on_before_assign_field_values: Optional[Callable[[Parsable], None]] = None
+        self._on_after_assign_field_values: Optional[Callable[[Parsable], None]] = None
 
     def get_child_node(self, identifier: str) -> Optional[ParseNode]:
         """Gets a new parse node for the given identifier
@@ -41,7 +40,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             raise ValueError("identifier cannot be None or empty.")
 
         if isinstance(node := self._json_node, dict) and identifier in node:
-            return JsonParseNode(node[identifier])
+            return self._create_new_node(node[identifier])
         return None
 
     def get_str_value(self) -> Optional[str]:
@@ -142,7 +141,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
 
         def func(item):
             generic_type = primitive_type if primitive_type else type(item)
-            current_parse_node = JsonParseNode(item)
+            current_parse_node = self._create_new_node(item)
             if generic_type in primitive_types:
                 method = getattr(current_parse_node, f'get_{generic_type.__name__.lower()}_value')
                 return method()
@@ -160,7 +159,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, list):
             return list(
                 map(
-                    lambda x: JsonParseNode(x).get_object_value(factory),  # type: ignore
+                    lambda x: self._create_new_node(x).get_object_value(factory),  # type: ignore
                     self._json_node,
                 )
             )
@@ -172,7 +171,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             List[K]: The collection of enum values
         """
         if isinstance(self._json_node, list):
-            return list(map(lambda x: JsonParseNode(x).get_enum_value(enum_class), self._json_node))
+            return list(
+                map(lambda x: self._create_new_node(x).get_enum_value(enum_class), self._json_node)
+            )
         return []
 
     def get_enum_value(self, enum_class: K) -> Optional[K]:
@@ -203,11 +204,11 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         """
 
         result = factory.create_from_discriminator_value(self)
-        if self.on_before_assign_field_values:
-            self.on_before_assign_field_values(result)
+        if on_before := self.on_before_assign_field_values:
+            on_before(result)
         self._assign_field_values(result)
-        if self.on_after_assign_field_values:
-            self.on_after_assign_field_values(result)
+        if on_after := self.on_after_assign_field_values:
+            on_after(result)
         return result
 
     def get_bytes_value(self) -> Optional[bytes]:
@@ -220,35 +221,39 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             return None
         return base64_string.encode("utf-8")
 
-    def get_on_before_assign_field_values(self) -> Optional[Callable[[Parsable], None]]:
+    @property
+    def on_before_assign_field_values(self) -> Optional[Callable[[Parsable], None]]:
         """Gets the callback called before the node is deserialized.
         Returns:
             Callable[[Parsable], None]: the callback called before the node is deserialized.
         """
-        return self.on_before_assign_field_values
+        return self._on_before_assign_field_values
 
-    def get_on_after_assign_field_values(self) -> Optional[Callable[[Parsable], None]]:
-        """Gets the callback called before the node is deserialized.
-        Returns:
-            Callable[[Parsable], None]: the callback called before the node is deserialized.
-        """
-        return self.on_after_assign_field_values
-
-    def set_on_before_assign_field_values(self, value: Callable[[Parsable], None]) -> None:
+    @on_before_assign_field_values.setter
+    def on_before_assign_field_values(self, value: Callable[[Parsable], None]) -> None:
         """Sets the callback called before the node is deserialized.
         Args:
             value (Callable[[Parsable], None]): the callback called before the node is
             deserialized.
         """
-        self.on_before_assign_field_values = value
+        self._on_before_assign_field_values = value
 
-    def set_on_after_assign_field_values(self, value: Callable[[Parsable], None]) -> None:
+    @property
+    def on_after_assign_field_values(self) -> Optional[Callable[[Parsable], None]]:
+        """Gets the callback called before the node is deserialized.
+        Returns:
+            Callable[[Parsable], None]: the callback called before the node is deserialized.
+        """
+        return self._on_after_assign_field_values
+
+    @on_after_assign_field_values.setter
+    def on_after_assign_field_values(self, value: Callable[[Parsable], None]) -> None:
         """Sets the callback called after the node is deserialized.
         Args:
             value (Callable[[Parsable], None]): the callback called after the node is
             deserialized.
         """
-        self.on_after_assign_field_values = value
+        self._on_after_assign_field_values = value
 
     def _assign_field_values(self, item: U) -> None:
         """Assigns the field values to the model object"""
@@ -306,3 +311,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                 pass
             return value
         raise ValueError(f"Unexpected additional value type {type(value)} during deserialization.")
+
+    def _create_new_node(self, node: Any) -> JsonParseNode:
+        new_node: JsonParseNode = JsonParseNode(node)
+        new_node.on_before_assign_field_values = self.on_before_assign_field_values
+        new_node.on_after_assign_field_values = self.on_after_assign_field_values
+        return new_node
