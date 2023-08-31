@@ -272,7 +272,7 @@ class JsonSerializationWriter(SerializationWriter):
             for key, val in value.items():
                 self.writer[key] = val
 
-    def get_serialized_content(self) -> bytes:
+    def get_serialized_content(self, **kwargs) -> bytes:
         """Gets the value of the serialized content.
         Returns:
             bytes: The value of the serialized content.
@@ -283,10 +283,10 @@ class JsonSerializationWriter(SerializationWriter):
             raise ValueError("Invalid Json output")
 
         if self.value:
-            json_string = json.dumps(self.value)
+            json_string = json.dumps(self.value, **kwargs)
             self.value = None
         else:
-            json_string = json.dumps(self.writer)
+            json_string = json.dumps(self.writer, **kwargs)
             self.writer.clear()
 
         stream = json_string.encode('utf-8')
