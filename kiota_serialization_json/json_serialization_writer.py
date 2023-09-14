@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, TypeVar
 from uuid import UUID
 
 from kiota_abstractions.serialization import Parsable, SerializationWriter
+from kiota_abstractions.store import BackedModel
 
 T = TypeVar("T")
 U = TypeVar("U", bound=Parsable)
@@ -278,9 +279,13 @@ class JsonSerializationWriter(SerializationWriter):
             bytes: The value of the serialized content.
         """
         if self.writer and self.value:
-            # Json output is invalid if it has a mix of values
-            # and key-value pairs.
-            raise ValueError("Invalid Json output")
+            if isinstance(self.value, dict):
+                self.writer.update(self.value)
+                self.value = None
+            else:
+                # Json output is invalid if it has a mix of values
+                # and key-value pairs.
+                raise ValueError("Invalid Json output")
 
         if self.value:
             json_string = json.dumps(self.value)
@@ -403,6 +408,12 @@ class JsonSerializationWriter(SerializationWriter):
         if on_start := self.on_start_object_serialization:
             on_start(value, self)
         value.serialize(temp_writer)
+        if isinstance(value, BackedModel):
+            changed_keys = [k for k,v in value.backing_store.enumerate_()]
+            serialized_keys = [k for k in temp_writer.writer]
+            for key in list(set(serialized_keys) - set(changed_keys)):
+                # Discard unchanged values from serialization
+                del temp_writer.writer[key]
 
     def _create_new_writer(self) -> SerializationWriter:
         writer = JsonSerializationWriter()
