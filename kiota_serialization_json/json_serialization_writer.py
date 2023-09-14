@@ -410,7 +410,7 @@ class JsonSerializationWriter(SerializationWriter):
             on_start(value, self)
         value.serialize(temp_writer)
         if isinstance(value, BackedModel):
-            changed_keys = [k for k,v in value.backing_store.enumerate_()]
+            changed_keys = [k for k, v in value.backing_store.enumerate_()]
             serialized_keys = [k for k in temp_writer.writer]
             for key in list(set(serialized_keys) - set(changed_keys)):
                 # Discard unchanged values from serialization
