@@ -6,7 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "microsoft-kiota-serialization-json"
 authors = [{name = "Microsoft", email = "graphtooling+python@microsoft.com"}]
 dependencies = [
-    "microsoft-kiota_abstractions >=0.1.0",
+    "microsoft-kiota_abstractions >=0.8,<0.9",
     "python-dateutil >=2.8.2",
 ]
 license = {file = "LICENSE"}
