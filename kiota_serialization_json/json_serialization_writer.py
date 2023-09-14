@@ -280,6 +280,7 @@ class JsonSerializationWriter(SerializationWriter):
         """
         if self.writer and self.value:
             if isinstance(self.value, dict):
+                # Adds values changed to null to writer to get final serialized content
                 self.writer.update(self.value)
                 self.value = None
             else:
