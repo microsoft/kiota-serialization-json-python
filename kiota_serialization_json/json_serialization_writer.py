@@ -409,14 +409,8 @@ class JsonSerializationWriter(SerializationWriter):
         if on_start := self.on_start_object_serialization:
             on_start(value, self)
         value.serialize(temp_writer)
-        if isinstance(value, BackedModel):
-            changed_keys = [k for k, v in value.backing_store.enumerate_()]
-            serialized_keys = list(temp_writer.writer)
-            for key in list(set(serialized_keys) - set(changed_keys)):
-                # Discard unchanged values from serialization
-                del temp_writer.writer[key]
 
-    def _create_new_writer(self) -> SerializationWriter:
+    def _create_new_writer(self) -> JsonSerializationWriter:
         writer = JsonSerializationWriter()
         writer.on_before_object_serialization = self.on_before_object_serialization
         writer.on_after_object_serialization = self.on_after_object_serialization
