@@ -62,7 +62,7 @@ wrapt==1.15.0
 
 yapf==0.40.1
 
-zipp==3.16.2 ; python_version >= '3.8'
+zipp==3.17.0 ; python_version >= '3.8'
 
 colorama==0.4.6
 
