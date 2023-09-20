@@ -68,7 +68,7 @@ colorama==0.4.6
 
 exceptiongroup==1.1.3
 
-microsoft-kiota-abstractions==0.8.5
+microsoft-kiota-abstractions==0.8.6
 
 python-dateutil==2.8.2
 
