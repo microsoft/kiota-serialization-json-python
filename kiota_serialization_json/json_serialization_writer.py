@@ -95,7 +95,7 @@ class JsonSerializationWriter(SerializationWriter):
                     self.value = value
             except ValueError:
                 if key:
-                  raise ValueError(f"Invalid UUID string value found for property {key}")  
+                    raise ValueError(f"Invalid UUID string value found for property {key}")
                 raise ValueError("Invalid UUID string value found")
 
     def write_datetime_value(self, key: Optional[str], value: Optional[datetime]) -> None:
@@ -118,7 +118,7 @@ class JsonSerializationWriter(SerializationWriter):
                     self.value = value
             except ValueError:
                 if key:
-                  raise ValueError(f"Invalid datetime string value found for property {key}")  
+                    raise ValueError(f"Invalid datetime string value found for property {key}")
                 raise ValueError("Invalid datetime string value found")
 
     def write_timedelta_value(self, key: Optional[str], value: Optional[timedelta]) -> None:
@@ -141,7 +141,7 @@ class JsonSerializationWriter(SerializationWriter):
                     self.value = value
             except ValueError:
                 if key:
-                  raise ValueError(f"Invalid timedelta string value found for property {key}")  
+                    raise ValueError(f"Invalid timedelta string value found for property {key}")
                 raise ValueError("Invalid timedelta string value found")
 
     def write_date_value(self, key: Optional[str], value: Optional[date]) -> None:
@@ -164,7 +164,7 @@ class JsonSerializationWriter(SerializationWriter):
                     self.value = value
             except ValueError:
                 if key:
-                  raise ValueError(f"Invalid date string value found for property {key}")  
+                    raise ValueError(f"Invalid date string value found for property {key}")
                 raise ValueError("Invalid date string value found")
 
     def write_time_value(self, key: Optional[str], value: Optional[time]) -> None:
@@ -187,7 +187,7 @@ class JsonSerializationWriter(SerializationWriter):
                     self.value = value
             except ValueError:
                 if key:
-                  raise ValueError(f"Invalid time string value found for property {key}")  
+                    raise ValueError(f"Invalid time string value found for property {key}")
                 raise ValueError("Invalid time string value found")
 
     def write_collection_of_primitive_values(
