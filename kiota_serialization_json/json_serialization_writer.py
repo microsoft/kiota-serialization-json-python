@@ -7,6 +7,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 from uuid import UUID
 
+from dateutil import parser
 from kiota_abstractions.serialization import Parsable, SerializationWriter
 
 T = TypeVar("T")
@@ -85,6 +86,17 @@ class JsonSerializationWriter(SerializationWriter):
                 self.writer[key] = str(value)
             else:
                 self.value = str(value)
+        elif isinstance(value, str):
+            try:
+                UUID(value)
+                if key:
+                    self.writer[key] = value
+                else:
+                    self.value = value
+            except ValueError:
+                if key:
+                  raise ValueError(f"Invalid UUID value found for property {key}")  
+                raise ValueError("Invalid UUID value found")
 
     def write_datetime_value(self, key: Optional[str], value: Optional[datetime]) -> None:
         """Writes the specified datetime offset value to the stream with an optional given key.
@@ -97,6 +109,17 @@ class JsonSerializationWriter(SerializationWriter):
                 self.writer[key] = str(value.isoformat())
             else:
                 self.value = str(value.isoformat())
+        elif isinstance(value, str):
+            try:
+                parser.parse(value)
+                if key:
+                    self.writer[key] = value
+                else:
+                    self.value = value
+            except ValueError:
+                if key:
+                  raise ValueError(f"Invalid datetime value found for property {key}")  
+                raise ValueError("Invalid datetime value found")
 
     def write_timedelta_value(self, key: Optional[str], value: Optional[timedelta]) -> None:
         """Writes the specified timedelta value to the stream with an optional given key.
@@ -109,6 +132,17 @@ class JsonSerializationWriter(SerializationWriter):
                 self.writer[key] = str(value)
             else:
                 self.value = str(value)
+        elif isinstance(value, str):
+            try:
+                parser.parse(value)
+                if key:
+                    self.writer[key] = value
+                else:
+                    self.value = value
+            except ValueError:
+                if key:
+                  raise ValueError(f"Invalid timedelta value found for property {key}")  
+                raise ValueError("Invalid timedelta value found")
 
     def write_date_value(self, key: Optional[str], value: Optional[date]) -> None:
         """Writes the specified date value to the stream with an optional given key.
@@ -121,6 +155,17 @@ class JsonSerializationWriter(SerializationWriter):
                 self.writer[key] = str(value)
             else:
                 self.value = str(value)
+        elif isinstance(value, str):
+            try:
+                parser.parse(value)
+                if key:
+                    self.writer[key] = value
+                else:
+                    self.value = value
+            except ValueError:
+                if key:
+                  raise ValueError(f"Invalid date value found for property {key}")  
+                raise ValueError("Invalid date value found")
 
     def write_time_value(self, key: Optional[str], value: Optional[time]) -> None:
         """Writes the specified time value to the stream with an optional given key.
@@ -133,6 +178,17 @@ class JsonSerializationWriter(SerializationWriter):
                 self.writer[key] = str(value)
             else:
                 self.value = str(value)
+        elif isinstance(value, str):
+            try:
+                parser.parse(value)
+                if key:
+                    self.writer[key] = value
+                else:
+                    self.value = value
+            except ValueError:
+                if key:
+                  raise ValueError(f"Invalid time value found for property {key}")  
+                raise ValueError("Invalid time value found")
 
     def write_collection_of_primitive_values(
         self, key: Optional[str], values: Optional[List[T]]
@@ -402,6 +458,7 @@ class JsonSerializationWriter(SerializationWriter):
             on_before(value)
         if on_start := self.on_start_object_serialization:
             on_start(value, self)
+
         value.serialize(temp_writer)
 
     def _create_new_writer(self) -> SerializationWriter:
