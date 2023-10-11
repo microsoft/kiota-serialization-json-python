@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 from uuid import UUID
 
-from dateutil import parser
+import pendulum
 from kiota_abstractions.serialization import Parsable, ParsableFactory, ParseNode
 
 T = TypeVar("T")
@@ -90,7 +90,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, datetime):
             return self._json_node
         if isinstance(self._json_node, str):
-            return parser.parse(self._json_node)
+            return pendulum.parse(self._json_node)
         return None
 
     def get_timedelta_value(self) -> Optional[timedelta]:
@@ -101,7 +101,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, timedelta):
             return self._json_node
         if isinstance(self._json_node, str):
-            datetime_obj = parser.parse(self._json_node)
+            datetime_obj = pendulum.parse(self._json_node)
             return timedelta(
                 hours=datetime_obj.hour, minutes=datetime_obj.minute, seconds=datetime_obj.second
             )
@@ -115,7 +115,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, date):
             return self._json_node
         if isinstance(self._json_node, str):
-            datetime_obj = parser.parse(self._json_node)
+            datetime_obj = pendulum.parse(self._json_node)
             return datetime_obj.date()
         return None
 
@@ -127,7 +127,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, time):
             return self._json_node
         if isinstance(self._json_node, str):
-            datetime_obj = parser.parse(self._json_node)
+            datetime_obj = pendulum.parse(self._json_node)
             return datetime_obj.time()
         return None
 
@@ -293,7 +293,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             return dict(map(lambda x: (x[0], self.try_get_anything(x[1])), value.items()))
         if isinstance(value, str):
             try:
-                datetime_obj = parser.parse(value)
+                datetime_obj = pendulum.parse(value)
                 return timedelta(
                     hours=datetime_obj.hour,
                     minutes=datetime_obj.minute,
@@ -302,7 +302,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             except ValueError:
                 pass
             try:
-                return parser.parse(value)
+                return pendulum.parse(value)
             except ValueError:
                 pass
             try:
