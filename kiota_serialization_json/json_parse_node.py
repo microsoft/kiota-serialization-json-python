@@ -90,7 +90,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, datetime):
             return self._json_node
         if isinstance(self._json_node, str):
-            return pendulum.parse(self._json_node)
+            datetime_obj = pendulum.parse(self._json_node, exact=True)
+            if isinstance(datetime_obj, pendulum.DateTime):
+                return datetime_obj
         return None
 
     def get_timedelta_value(self) -> Optional[timedelta]:
@@ -101,10 +103,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, timedelta):
             return self._json_node
         if isinstance(self._json_node, str):
-            datetime_obj = pendulum.parse(self._json_node)
-            return timedelta(
-                hours=datetime_obj.hour, minutes=datetime_obj.minute, seconds=datetime_obj.second
-            )
+            datetime_obj = pendulum.parse(self._json_node, exact=True)
+            if isinstance(datetime_obj, pendulum.Duration):
+                return datetime_obj.as_timedelta()
         return None
 
     def get_date_value(self) -> Optional[date]:
@@ -115,8 +116,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, date):
             return self._json_node
         if isinstance(self._json_node, str):
-            datetime_obj = pendulum.parse(self._json_node)
-            return datetime_obj.date()
+            datetime_obj = pendulum.parse(self._json_node, exact=True)
+            if isinstance(datetime_obj, pendulum.Date):
+                return datetime_obj
         return None
 
     def get_time_value(self) -> Optional[time]:
@@ -127,8 +129,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(self._json_node, time):
             return self._json_node
         if isinstance(self._json_node, str):
-            datetime_obj = pendulum.parse(self._json_node)
-            return datetime_obj.time()
+            datetime_obj = pendulum.parse(self._json_node, exact=True)
+            if isinstance(datetime_obj, pendulum.Time):
+                return datetime_obj
         return None
 
     def get_collection_of_primitive_values(self, primitive_type: Any) -> Optional[List[T]]:
@@ -294,15 +297,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(value, str):
             try:
                 datetime_obj = pendulum.parse(value)
-                return timedelta(
-                    hours=datetime_obj.hour,
-                    minutes=datetime_obj.minute,
-                    seconds=datetime_obj.second
-                )
-            except ValueError:
-                pass
-            try:
-                return pendulum.parse(value)
+                if isinstance(datetime_obj, pendulum.Duration):
+                    return datetime_obj.as_timedelta()
+                return datetime_obj
             except ValueError:
                 pass
             try:
