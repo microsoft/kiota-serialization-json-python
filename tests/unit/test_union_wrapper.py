@@ -32,7 +32,7 @@ class TestUnionWrapperParseTests:
         assert result.composed_type1.id == UUID("8f841f30-e6e3-439a-a812-ebd369559c36")
         assert result.composed_type1.office_location == OfficeLocation.Dunhill
         assert result.composed_type1.is_active is True
-        assert str(result.composed_type1.updated_at) == '2021-07-29 03:07:25+00:00'
+        assert str(result.composed_type1.updated_at) == '2021-07-29T03:07:25+00:00'
 
     def test_parse_union_type_complex_property2(self):
         json_string = '{"@odata.type": "#microsoft.graph.User2", "id": 43,\

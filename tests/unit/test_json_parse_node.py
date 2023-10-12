@@ -48,24 +48,24 @@ def test_get_datetime_value():
 
 
 def test_get_date_value():
-    parse_node = JsonParseNode('2015-04-20T11:50:51Z')
+    parse_node = JsonParseNode('2015-04-20')
     result = parse_node.get_date_value()
     assert isinstance(result, date)
     assert str(result) == '2015-04-20'
 
 
 def test_get_time_value():
-    parse_node = JsonParseNode('2022-01-27T12:59:45.596117')
+    parse_node = JsonParseNode('12:59:45.596117')
     result = parse_node.get_time_value()
     assert isinstance(result, time)
     assert str(result) == '12:59:45.596117'
 
 
 def test_get_timedelta_value():
-    parse_node = JsonParseNode('2022-01-27T12:59:45.596117')
+    parse_node = JsonParseNode('PT30S')
     result = parse_node.get_timedelta_value()
     assert isinstance(result, timedelta)
-    assert str(result) == '12:59:45'
+    assert str(result) == '0:00:30'
 
 
 def test_get_collection_of_primitive_values():
