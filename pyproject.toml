@@ -6,16 +6,14 @@ build-backend = "flit_core.buildapi"
 name = "microsoft-kiota-serialization-json"
 authors = [{name = "Microsoft", email = "graphtooling+python@microsoft.com"}]
 dependencies = [
-    "microsoft-kiota_abstractions >=0.1.0",
+    "microsoft-kiota_abstractions >=1.0.0,<2.0.0",
     "pendulum >=2.1.2",
 ]
 license = {file = "LICENSE"}
 readme = "README.md"
 keywords = ["kiota", "openAPI", "Microsoft", "Graph"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
+    "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
