@@ -22,7 +22,7 @@ importlib-metadata==6.8.0 ; python_version >= '3.8'
 
 iniconfig==2.0.0
 
-isort==5.13.0
+isort==5.13.1
 
 lazy-object-proxy==1.9.0
 
