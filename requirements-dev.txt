@@ -70,7 +70,7 @@ exceptiongroup==1.2.0
 
 microsoft-kiota-abstractions==1.0.0
 
-pendulum==2.1.2
+pendulum==3.0.0b1
 
 six==1.16.0
 
