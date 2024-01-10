@@ -6,7 +6,7 @@ certifi==2023.11.17
 
 charset-normalizer==3.3.2
 
-coverage[toml]==7.3.3
+coverage[toml]==7.4.0
 
 dill==0.3.7
 
@@ -24,11 +24,11 @@ iniconfig==2.0.0
 
 isort==5.13.2
 
-lazy-object-proxy==1.9.0
+lazy-object-proxy==1.10.0
 
 mccabe==0.7.0
 
-mypy==1.7.1
+mypy==1.8.0
 
 mypy-extensions==1.0.0
 
@@ -40,7 +40,7 @@ pluggy==1.3.0
 
 pylint==3.0.3
 
-pytest==7.4.3
+pytest==7.4.4
 
 pytest-cov==4.1.0
 
@@ -52,7 +52,7 @@ tomli==2.0.1
 
 tomlkit==0.12.3
 
-types-python-dateutil==2.8.19.14
+types-python-dateutil==2.8.19.20240106
 
 typing-extensions==4.9.0
 
@@ -70,7 +70,7 @@ exceptiongroup==1.2.0
 
 microsoft-kiota-abstractions==1.0.0
 
-pendulum==3.0.0b1
+pendulum==3.0.0
 
 six==1.16.0
 
