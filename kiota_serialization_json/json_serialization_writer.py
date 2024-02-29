@@ -12,6 +12,7 @@ from kiota_abstractions.serialization import Parsable, SerializationWriter
 
 T = TypeVar("T")
 U = TypeVar("U", bound=Parsable)
+PRIMITIVE_TYPES = [bool, str, int, float, UUID, datetime, timedelta, date, time, Enum]
 
 
 class JsonSerializationWriter(SerializationWriter):
@@ -326,7 +327,7 @@ class JsonSerializationWriter(SerializationWriter):
         """
         if isinstance(value, dict):
             for key, val in value.items():
-                self.writer[key] = val
+                self.write_any_value(key, val)
 
     def get_serialized_content(self) -> bytes:
         """Gets the value of the serialized content.
@@ -424,34 +425,32 @@ class JsonSerializationWriter(SerializationWriter):
             key (Optional[str]): The key to be used for the written value. May be null.
             value Any): The value to be written.
         """
-        primitive_types = [bool, str, int, float, UUID, datetime, timedelta, date, time, Enum]
         if value:
             value_type = type(value)
-            if key:
-                if value_type in primitive_types:
-                    method = getattr(self, f'write_{value_type.__name__.lower()}_value')
-                    method(key, value)
-                elif isinstance(value, Parsable):
-                    self.write_object_value(key, value)
-                elif hasattr(value, '__dict__'):
-                    self.write_non_parsable_object_value(key, value)
+            if value_type in PRIMITIVE_TYPES:
+                method = getattr(self, f'write_{value_type.__name__.lower()}_value')
+                method(key, value)
+            elif isinstance(value, Parsable):
+                self.write_object_value(key, value)
+            elif isinstance(value, list):
+                if all(isinstance(x, Parsable) for x in value):
+                    self.write_collection_of_object_values(key, value)
+                elif all(isinstance(x, Enum) for x in value):
+                    self.write_collection_of_enum_values(key, value)
+                elif all((type(x) in PRIMITIVE_TYPES) for x in value):
+                    self.write_collection_of_primitive_values(key, value)
                 else:
                     raise TypeError(
-                        f"Encountered an unknown type during serialization {value_type} \
-                            with key {key}"
+                        f"Encountered an unknown collection type during serialization \
+                        {value_type} with key {key}"
                     )
+            elif hasattr(value, '__dict__'):
+                self.write_non_parsable_object_value(key, value)
             else:
-                if value_type in primitive_types:
-                    method = getattr(self, f'write_{value_type.__name__.lower()}_value')
-                    method(None, value)
-                elif isinstance(value, Parsable):
-                    self.write_object_value(None, value)
-                elif hasattr(value, '__dict__'):
-                    self.write_non_parsable_object_value(None, value)
-                else:
-                    raise TypeError(
-                        f"Encountered an unknown type during serialization {value_type}"
-                    )
+                raise TypeError(
+                    f"Encountered an unknown type during serialization {value_type} \
+                        with key {key}"
+                )
 
     def _serialize_value(self, temp_writer: JsonSerializationWriter, value: U):
         if on_before := self.on_before_object_serialization:
@@ -467,3 +466,30 @@ class JsonSerializationWriter(SerializationWriter):
         writer.on_after_object_serialization = self.on_after_object_serialization
         writer.on_start_object_serialization = self.on_start_object_serialization
         return writer
+
+    def _write_any_value_with_key(self, key: Optional[str], value: Any) -> None:
+        value_type = type(value)
+        if value_type in PRIMITIVE_TYPES:
+            method = getattr(self, f'write_{value_type.__name__.lower()}_value')
+            method(key, value)
+        elif isinstance(value, Parsable):
+            self.write_object_value(key, value)
+        elif isinstance(value, list):
+            if all(isinstance(x, Parsable) for x in value):
+                self.write_collection_of_object_values(key, value)
+            elif all(isinstance(x, Enum) for x in value):
+                self.write_collection_of_enum_values(key, value)
+            elif all((type(x) in PRIMITIVE_TYPES) for x in value):
+                self.write_collection_of_primitive_values(key, value)
+            else:
+                raise TypeError(
+                    f"Encountered an unknown collection type during serialization \
+                    {value_type} with key {key}"
+                )
+        elif hasattr(value, '__dict__'):
+            self.write_non_parsable_object_value(key, value)
+        else:
+            raise TypeError(
+                f"Encountered an unknown type during serialization {value_type} \
+                    with key {key}"
+            )
