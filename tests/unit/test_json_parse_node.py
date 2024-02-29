@@ -3,9 +3,8 @@ from datetime import date, datetime, time, timedelta
 from uuid import UUID
 
 import pytest
-
+from pendulum import DateTime, FixedTimezone
 from kiota_serialization_json.json_parse_node import JsonParseNode
-
 from ..helpers import OfficeLocation, User
 
 url: str = "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
@@ -111,6 +110,22 @@ def test_get_object_value(user1_json):
     assert result.business_phones == ["+1 205 555 0108"]
     assert result.is_active is True
     assert result.mobile_phone is None
+    assert result.additional_data["additional_data"]["@odata.context"] == "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
+    assert result.additional_data["additional_data"]["manager"] == {
+        "id": UUID('8f841f30-e6e3-439a-a812-ebd369559c36'),
+        "updated_at": DateTime(2022, 1, 27, 12, 59, 45, 596117, tzinfo=FixedTimezone(0, name="+00:00")),
+        "is_active": True}
+    assert result.additional_data["additional_data"]["approvers"] == [
+        {
+            "id": UUID('8f841f30-e6e3-439a-a812-ebd369559c36'),
+            "updated_at": DateTime(2022, 1, 27, 12, 59, 45, 596117, tzinfo=FixedTimezone(0, name="+00:00")),
+            "is_active": True
+        },
+        {
+            "display_name": "John Doe",
+            "age": 32
+        }
+    ]
 
 
 def test_get_collection_of_object_values(users_json):
