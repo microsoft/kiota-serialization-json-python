@@ -300,11 +300,11 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                 if isinstance(datetime_obj, pendulum.Duration):
                     return datetime_obj.as_timedelta()
                 return datetime_obj
-            except ValueError:
+            except:
                 pass
             try:
                 return UUID(value)
-            except ValueError:
+            except:
                 pass
             return value
         raise ValueError(f"Unexpected additional value type {type(value)} during deserialization.")
