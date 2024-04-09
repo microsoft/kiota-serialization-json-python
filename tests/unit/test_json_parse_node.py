@@ -99,6 +99,12 @@ def test_get_enum_value():
     assert result == OfficeLocation.Dunhill
 
 
+def test_get_enum_value_for_key_not_found():
+    parse_node = JsonParseNode("whitehouse")
+    result = parse_node.get_enum_value(OfficeLocation)
+    assert result is None
+
+
 def test_get_object_value(user1_json):
     parse_node = JsonParseNode(json.loads(user1_json))
     result = parse_node.get_object_value(User)
@@ -110,18 +116,23 @@ def test_get_object_value(user1_json):
     assert result.business_phones == ["+1 205 555 0108"]
     assert result.is_active is True
     assert result.mobile_phone is None
-    assert result.additional_data["additional_data"]["@odata.context"] == "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
+    assert result.additional_data["additional_data"][
+        "@odata.context"] == "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
     assert result.additional_data["additional_data"]["manager"] == {
         "id": UUID('8f841f30-e6e3-439a-a812-ebd369559c36'),
-        "updated_at": DateTime(2022, 1, 27, 12, 59, 45, 596117, tzinfo=FixedTimezone(0, name="+00:00")),
-        "is_active": True}
+        "updated_at":
+        DateTime(2022, 1, 27, 12, 59, 45, 596117, tzinfo=FixedTimezone(0, name="+00:00")),
+        "is_active": True
+    }
     assert result.additional_data["additional_data"]["approvers"] == [
         {
-            "id": UUID('8f841f30-e6e3-439a-a812-ebd369559c36'),
-            "updated_at": DateTime(2022, 1, 27, 12, 59, 45, 596117, tzinfo=FixedTimezone(0, name="+00:00")),
-            "is_active": True
-        },
-        {
+            "id":
+            UUID('8f841f30-e6e3-439a-a812-ebd369559c36'),
+            "updated_at":
+            DateTime(2022, 1, 27, 12, 59, 45, 596117, tzinfo=FixedTimezone(0, name="+00:00")),
+            "is_active":
+            True
+        }, {
             "display_name": "John Doe",
             "age": 32
         }
