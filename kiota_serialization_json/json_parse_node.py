@@ -198,7 +198,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         try:
             return enum_class[camel_case_key]  # type: ignore
         except KeyError:
-            raise Exception(f'Invalid key: {camel_case_key} for enum {enum_class}.')
+            return None
 
     def get_object_value(self, factory: ParsableFactory) -> U:
         """Gets the model object value of the node
