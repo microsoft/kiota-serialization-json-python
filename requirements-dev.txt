@@ -34,7 +34,7 @@ mypy-extensions==1.0.0
 
 packaging==24.0
 
-platformdirs==4.2.0
+platformdirs==4.2.1
 
 pluggy==1.4.0
 
