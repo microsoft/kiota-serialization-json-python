@@ -19,7 +19,12 @@ def user1_json():
                 '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '\
             '"approvers": [{"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
                 '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '\
-                '{"display_name": "John Doe", "age": 32}]}}'
+                '{"display_name": "John Doe", "age": 32}], '\
+            '"data": {'\
+                '"groups": ['\
+                    '{"friends": [{"display_name": "John Doe", "age": 32}]}'\
+                ']'\
+            '}}}'\
 
 
 @pytest.fixture
