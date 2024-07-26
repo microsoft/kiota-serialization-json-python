@@ -67,9 +67,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
     def get_float_value(self) -> Optional[float]:
         """Gets the float value of the json node
         Returns:
-            float: The integer value of the node
+            float: The number value of the node
         """
-        return self._json_node if isinstance(self._json_node, float) else None
+        return float(self._json_node) if isinstance(self._json_node, (float, int)) else None
 
     def get_uuid_value(self) -> Optional[UUID]:
         """Gets the UUID value of the json node
