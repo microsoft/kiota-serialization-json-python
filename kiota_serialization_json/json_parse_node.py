@@ -89,7 +89,11 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         """
         if isinstance(self._json_node, datetime):
             return self._json_node
+
         if isinstance(self._json_node, str):
+            if len(self._json_node) < 10:
+                return None
+
             datetime_obj = pendulum.parse(self._json_node, exact=True)
             if isinstance(datetime_obj, pendulum.DateTime):
                 return datetime_obj
