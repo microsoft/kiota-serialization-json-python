@@ -253,7 +253,7 @@ class JsonSerializationWriter(SerializationWriter):
             else:
                 self.value = result
 
-    def write_collection_of_dict_values(
+    def __write_collection_of_dict_values(
         self, key: Optional[str], values: Optional[List[Dict[str, Any]]]
     ) -> None:
         """Writes the specified collection of dictionary values to the stream with an optional given key.
@@ -265,7 +265,7 @@ class JsonSerializationWriter(SerializationWriter):
             result = []
             for val in values:
                 temp_writer: JsonSerializationWriter = self._create_new_writer()
-                temp_writer.write_dict_value(None, val)
+                temp_writer.__write_dict_value(None, val)
                 result.append(temp_writer.value)
 
             if key:
@@ -340,7 +340,7 @@ class JsonSerializationWriter(SerializationWriter):
         else:
             self.value = "null"
 
-    def write_dict_value(self, key: Optional[str], value: Dict[str, Any]) -> None:
+    def __write_dict_value(self, key: Optional[str], value: Dict[str, Any]) -> None:
         """Writes the specified dictionary value to the stream with an optional given key.
         Args:
             key (Optional[str]): The key to be used for the written value. May be null.
@@ -476,14 +476,14 @@ class JsonSerializationWriter(SerializationWriter):
             elif all((type(x) in PRIMITIVE_TYPES) for x in value):
                 self.write_collection_of_primitive_values(key, value)
             elif all(isinstance(x, dict) for x in value):
-                self.write_collection_of_dict_values(key, value)
+                self.__write_collection_of_dict_values(key, value)
             else:
                 raise TypeError(
                     f"Encountered an unknown collection type during serialization \
                     {value_type} with key {key}"
                 )
         elif isinstance(value, dict):
-            self.write_dict_value(key, value)
+            self.__write_dict_value(key, value)
         elif hasattr(value, '__dict__'):
             self.write_non_parsable_object_value(key, value)
         else:
