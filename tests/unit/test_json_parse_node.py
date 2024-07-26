@@ -142,6 +142,14 @@ def test_get_object_value(user1_json):
             "age": 32
         }
     ]
+    assert result.additional_data["additional_data"]["data"] == {
+        "groups": [{
+            "friends": [{
+                "display_name": "John Doe",
+                "age": 32
+            }]
+        }]
+    }
 
 
 def test_get_collection_of_object_values(users_json):
