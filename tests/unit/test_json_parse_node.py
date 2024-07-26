@@ -39,6 +39,11 @@ def test_get_uuid_value():
     result = parse_node.get_uuid_value()
     assert result == UUID("f58411c7-ae78-4d3c-bb0d-3f24d948de41")
 
+@pytest.mark.parametrize("value", ["", " ", "  ", "2022-01-0"])
+def test_get_datetime_value_returns_none_with_invalid_str(value: str):
+    parse_node = JsonParseNode(value)
+    result = parse_node.get_datetime_value()
+    assert result is None
 
 def test_get_datetime_value():
     parse_node = JsonParseNode('2022-01-27T12:59:45.596117')
