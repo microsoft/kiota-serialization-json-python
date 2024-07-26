@@ -256,10 +256,12 @@ class JsonSerializationWriter(SerializationWriter):
     def __write_collection_of_dict_values(
         self, key: Optional[str], values: Optional[List[Dict[str, Any]]]
     ) -> None:
-        """Writes the specified collection of dictionary values to the stream with an optional given key.
+        """Writes the specified collection of dictionary values to the stream with an optional
+            given key.
         Args:
             key (Optional[str]): The key to be used for the written value. May be null.
-            values (Optional[List[Dict[str, Any]]]): The collection of dictionary values to be written.
+            values (Optional[List[Dict[str, Any]]]): The collection of dictionary values
+            to be written.
         """
         if isinstance(values, list):
             result = []
