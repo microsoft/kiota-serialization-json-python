@@ -28,11 +28,31 @@ def test_get_bool_value():
     assert result is False
 
 
-def test_get_float_value():
+def test_get_float_value_from_float():
+    """
+    This test is to ensure that the get_float_value method returns a float when the value is a float
+    """
     parse_node = JsonParseNode(44.6)
     result = parse_node.get_float_value()
+    assert isinstance(result, float)
     assert result == 44.6
 
+
+@pytest.mark.parametrize("value", [0, 10, 100])
+def test_get_float_value(value: int):
+    """
+    Consider an OpenAPI Specification using the type: number and format: float or double    
+    Note: The OpenAPI Specification also allows for the use of the type: integer and format: int32 or int64
+
+    Consider an API with Price data [0, 0.5, 1, 1.5, 2] and so on
+    In this case, the contract must define the type as a number, with a hint of float or double as the format
+
+    Kiota should be able to parse the response as a float, even if the value is an integer, because it's still a number.
+    """
+    parse_node = JsonParseNode(value)
+    result = parse_node.get_float_value()
+    assert isinstance(result, float)
+    assert result == float(value)
 
 def test_get_uuid_value():
     parse_node = JsonParseNode("f58411c7-ae78-4d3c-bb0d-3f24d948de41")
