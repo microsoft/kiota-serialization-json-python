@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Fixed a bug where date time deserialization would fail because of empty strings.
+- Fixed a bug where float deserialization if the number represented qualified as an int.
 
 ## [1.2.0] - 2024-04-09
 
