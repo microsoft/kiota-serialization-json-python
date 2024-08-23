@@ -307,7 +307,6 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         if isinstance(value, str):
             try:
                 if self.is_four_digit_number(value):
-                    print(value)
                     return value
 
                 datetime_obj = pendulum.parse(value)
