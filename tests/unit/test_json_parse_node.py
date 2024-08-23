@@ -1,6 +1,7 @@
 import json
 from datetime import date, datetime, time, timedelta
 from uuid import UUID
+import pendulum
 
 import pytest
 from pendulum import DateTime, FixedTimezone
@@ -54,16 +55,19 @@ def test_get_float_value(value: int):
     assert isinstance(result, float)
     assert result == float(value)
 
+
 def test_get_uuid_value():
     parse_node = JsonParseNode("f58411c7-ae78-4d3c-bb0d-3f24d948de41")
     result = parse_node.get_uuid_value()
     assert result == UUID("f58411c7-ae78-4d3c-bb0d-3f24d948de41")
+
 
 @pytest.mark.parametrize("value", ["", " ", "  ", "2022-01-0"])
 def test_get_datetime_value_returns_none_with_invalid_str(value: str):
     parse_node = JsonParseNode(value)
     result = parse_node.get_datetime_value()
     assert result is None
+
 
 def test_get_datetime_value():
     parse_node = JsonParseNode('2022-01-27T12:59:45.596117')
@@ -128,6 +132,20 @@ def test_get_enum_value_for_key_not_found():
     parse_node = JsonParseNode("whitehouse")
     result = parse_node.get_enum_value(OfficeLocation)
     assert result is None
+
+
+def test_get_anythin_does_not_convert_numeric_chars_to_datetime():
+    parse_node = JsonParseNode("1212")
+    result = parse_node.try_get_anything("1212")
+    assert isinstance(result, str)
+    assert result == "1212"
+
+
+def test_get_anythin_does_convert_date_string_to_datetime():
+    parse_node = JsonParseNode("2023-10-05T14:48:00.000Z")
+    result = parse_node.try_get_anything("2023-10-05T14:48:00.000Z")
+    assert isinstance(result, pendulum.DateTime)
+    assert result == pendulum.parse("2023-10-05T14:48:00.000Z")
 
 
 def test_get_object_value(user1_json):

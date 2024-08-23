@@ -8,6 +8,8 @@ from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 from uuid import UUID
 
 import pendulum
+import re
+
 from kiota_abstractions.serialization import Parsable, ParsableFactory, ParseNode
 
 T = TypeVar("T")
@@ -291,6 +293,10 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                     deserialize but the model doesn't support additional data"
                 )
 
+    def is_four_digit_number(self, value: str) -> bool:
+        pattern = r'^\d{4}$'
+        return bool(re.match(pattern, value))
+
     def try_get_anything(self, value: Any) -> Any:
         if isinstance(value, (int, float, bool)) or value is None:
             return value
@@ -300,11 +306,14 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             return dict(map(lambda x: (x[0], self.try_get_anything(x[1])), value.items()))
         if isinstance(value, str):
             try:
+                if self.is_four_digit_number(value):
+                    return value
+
                 datetime_obj = pendulum.parse(value)
                 if isinstance(datetime_obj, pendulum.Duration):
                     return datetime_obj.as_timedelta()
                 return datetime_obj
-            except:
+            except ValueError:
                 pass
             try:
                 return UUID(value)
