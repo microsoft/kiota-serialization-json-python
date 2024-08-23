@@ -1,5 +1,4 @@
 import json
-from io import BytesIO
 
 from kiota_abstractions.serialization import ParseNode, ParseNodeFactory
 

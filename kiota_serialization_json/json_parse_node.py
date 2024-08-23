@@ -69,9 +69,9 @@ class JsonParseNode(ParseNode, Generic[T, U]):
     def get_float_value(self) -> Optional[float]:
         """Gets the float value of the json node
         Returns:
-            float: The integer value of the node
+            float: The number value of the node
         """
-        return self._json_node if isinstance(self._json_node, float) else None
+        return float(self._json_node) if isinstance(self._json_node, (float, int)) else None
 
     def get_uuid_value(self) -> Optional[UUID]:
         """Gets the UUID value of the json node
@@ -91,7 +91,11 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         """
         if isinstance(self._json_node, datetime):
             return self._json_node
+
         if isinstance(self._json_node, str):
+            if len(self._json_node) < 10:
+                return None
+
             datetime_obj = pendulum.parse(self._json_node, exact=True)
             if isinstance(datetime_obj, pendulum.DateTime):
                 return datetime_obj
@@ -200,7 +204,7 @@ class JsonParseNode(ParseNode, Generic[T, U]):
         try:
             return enum_class[camel_case_key]  # type: ignore
         except KeyError:
-            raise Exception(f'Invalid key: {camel_case_key} for enum {enum_class}.')
+            return None
 
     def get_object_value(self, factory: ParsableFactory) -> U:
         """Gets the model object value of the node
@@ -305,16 +309,16 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                 if self.is_four_digit_number(value):
                     print(value)
                     return value
-
-                datetime_obj = pendulum.parse(value)
-                if isinstance(datetime_obj, pendulum.Duration):
-                    return datetime_obj.as_timedelta()
-                return datetime_obj
-            except ValueError:
+                else:
+                    datetime_obj = pendulum.parse(value)
+                    if isinstance(datetime_obj, pendulum.Duration):
+                        return datetime_obj.as_timedelta()
+                    return datetime_obj
+            except:
                 pass
             try:
                 return UUID(value)
-            except ValueError:
+            except:
                 pass
             return value
         raise ValueError(f"Unexpected additional value type {type(value)} during deserialization.")
