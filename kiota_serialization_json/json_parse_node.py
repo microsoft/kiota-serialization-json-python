@@ -8,6 +8,8 @@ from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 from uuid import UUID
 
 import pendulum
+import re
+
 from kiota_abstractions.serialization import Parsable, ParsableFactory, ParseNode
 
 T = TypeVar("T")
@@ -286,6 +288,10 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                     f"Found additional property {field_name} to \
                     deserialize but the model doesn't support additional data"
                 )
+
+    def is_four_digit_number(self, value: str) -> bool:
+        pattern = r'^\d{4}$'
+        return bool(re.match(pattern, value))
 
     def try_get_anything(self, value: Any) -> Any:
         if isinstance(value, (int, float, bool)) or value is None:
