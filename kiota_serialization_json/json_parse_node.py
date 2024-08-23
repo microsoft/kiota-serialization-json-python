@@ -305,11 +305,11 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                 if self.is_four_digit_number(value):
                     print(value)
                     return value
-                else:
-                    datetime_obj = pendulum.parse(value)
-                    if isinstance(datetime_obj, pendulum.Duration):
-                        return datetime_obj.as_timedelta()
-                    return datetime_obj
+
+                datetime_obj = pendulum.parse(value)
+                if isinstance(datetime_obj, pendulum.Duration):
+                    return datetime_obj.as_timedelta()
+                return datetime_obj
             except ValueError:
                 pass
             try:
