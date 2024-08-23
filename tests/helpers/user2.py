@@ -4,13 +4,13 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 
-from kiota_abstractions.serialization import ParseNode, SerializationWriter
+from kiota_abstractions.serialization import Parsable, ParseNode, SerializationWriter
 
 T = TypeVar('T')
 
 
 @dataclass
-class User2():
+class User2(Parsable):
     additional_data: Dict[str, Any] = field(default_factory=dict)
     id: Optional[int] = None
     display_name: Optional[str] = None
