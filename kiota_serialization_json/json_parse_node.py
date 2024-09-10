@@ -293,10 +293,6 @@ class JsonParseNode(ParseNode, Generic[T, U]):
                     deserialize but the model doesn't support additional data"
                 )
 
-    def __is_four_digit_number(self, value: str) -> bool:
-        pattern = r'^\d{4}$'
-        return bool(re.match(pattern, value))
-
     def try_get_anything(self, value: Any) -> Any:
         if isinstance(value, (int, float, bool)) or value is None:
             return value
@@ -306,9 +302,8 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             return dict(map(lambda x: (x[0], self.try_get_anything(x[1])), value.items()))
         if isinstance(value, str):
             try:
-                if self.__is_four_digit_number(value):
+                if value.isdigit():
                     return value
-
                 datetime_obj = pendulum.parse(value)
                 if isinstance(datetime_obj, pendulum.Duration):
                     return datetime_obj.as_timedelta()
