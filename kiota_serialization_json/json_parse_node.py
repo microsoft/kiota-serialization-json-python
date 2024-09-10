@@ -302,7 +302,8 @@ class JsonParseNode(ParseNode, Generic[T, U]):
             return dict(map(lambda x: (x[0], self.try_get_anything(x[1])), value.items()))
         if isinstance(value, str):
             try:
-
+                if value.isdigit():
+                    return value
                 datetime_obj = pendulum.parse(value)
                 if isinstance(datetime_obj, pendulum.Duration):
                     return datetime_obj.as_timedelta()
