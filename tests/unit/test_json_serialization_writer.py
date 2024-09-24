@@ -255,6 +255,7 @@ def test_write_additional_data_value(user_1, user_2):
             "manager": user_1,
             "approvers": [user_1, user_2],
             "created_at": date(2022, 1, 27),
+            "updated_at": pendulum.DateTime(2024, 9, 24),
             "data": {
                 "groups": [{
                     "friends": [user_2]
@@ -271,5 +272,7 @@ def test_write_additional_data_value(user_1, user_2):
                 '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '\
             '"approvers": [{"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
                 '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '\
-                '{"display_name": "John Doe", "age": 32}], "created_at": "2022-01-27", '\
-                '"data": {"groups": [{"friends": [{"display_name": "John Doe", "age": 32}]}]}}'
+                '{"display_name": "John Doe", "age": 32}], '\
+            '"created_at": "2022-01-27", '\
+            '"updated_at": "2024-09-24T00:00:00", '\
+            '"data": {"groups": [{"friends": [{"display_name": "John Doe", "age": 32}]}]}}'
