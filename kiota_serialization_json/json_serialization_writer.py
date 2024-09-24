@@ -16,7 +16,6 @@ PRIMITIVE_TYPES = [bool, str, int, float, UUID, datetime, timedelta, date, time,
 
 
 class JsonSerializationWriter(SerializationWriter):
-
     PROPERTY_SEPARATOR: str = ','
 
     def __init__(self) -> None:
@@ -24,7 +23,7 @@ class JsonSerializationWriter(SerializationWriter):
         self.value: Any = None
 
         self._on_start_object_serialization: Optional[Callable[[Parsable, SerializationWriter],
-                                                               None]] = None
+        None]] = None
         self._on_before_object_serialization: Optional[Callable[[Parsable], None]] = None
         self._on_after_object_serialization: Optional[Callable[[Parsable], None]] = None
 
@@ -192,7 +191,7 @@ class JsonSerializationWriter(SerializationWriter):
                 raise ValueError("Invalid time string value found")
 
     def write_collection_of_primitive_values(
-        self, key: Optional[str], values: Optional[List[T]]
+            self, key: Optional[str], values: Optional[List[T]]
     ) -> None:
         """Writes the specified collection of primitive values to the stream with an optional
         given key.
@@ -213,7 +212,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = result
 
     def write_collection_of_object_values(
-        self, key: Optional[str], values: Optional[List[U]]
+            self, key: Optional[str], values: Optional[List[U]]
     ) -> None:
         """Writes the specified collection of model objects to the stream with an optional
         given key.
@@ -234,7 +233,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = obj_list
 
     def write_collection_of_enum_values(
-        self, key: Optional[str], values: Optional[List[Enum]]
+            self, key: Optional[str], values: Optional[List[Enum]]
     ) -> None:
         """Writes the specified collection of enum values to the stream with an optional given key.
         Args:
@@ -254,7 +253,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = result
 
     def __write_collection_of_dict_values(
-        self, key: Optional[str], values: Optional[List[Dict[str, Any]]]
+            self, key: Optional[str], values: Optional[List[Dict[str, Any]]]
     ) -> None:
         """Writes the specified collection of dictionary values to the stream with an optional
             given key.
@@ -291,7 +290,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = base64_string
 
     def write_object_value(
-        self, key: Optional[str], value: Optional[U], *additional_values_to_merge: U
+            self, key: Optional[str], value: Optional[U], *additional_values_to_merge: U
     ) -> None:
         """Writes the specified model object to the stream with an optional given key.
         Args:
@@ -424,7 +423,7 @@ class JsonSerializationWriter(SerializationWriter):
 
     @property
     def on_start_object_serialization(
-        self
+            self
     ) -> Optional[Callable[[Parsable, SerializationWriter], None]]:
         """Gets the callback called right after the serialization process starts.
         Returns:
@@ -435,7 +434,7 @@ class JsonSerializationWriter(SerializationWriter):
 
     @on_start_object_serialization.setter
     def on_start_object_serialization(
-        self, value: Optional[Callable[[Parsable, SerializationWriter], None]]
+            self, value: Optional[Callable[[Parsable, SerializationWriter], None]]
     ) -> None:
         """Sets the callback called right after the serialization process starts.
         Args:
@@ -458,16 +457,13 @@ class JsonSerializationWriter(SerializationWriter):
 
     def write_any_value(self, key: Optional[str], value: Any) -> Any:
         """Writes the specified value to the stream with an optional given key.
+
         Args:
             key (Optional[str]): The key to be used for the written value. May be null.
-            value Any): The value to be written.
+            value (Any): The value to be written.
         """
-        value_type = type(value)
         if value is None:
             self.write_null_value(key)
-        elif value_type in PRIMITIVE_TYPES:
-            method = getattr(self, f'write_{value_type.__name__.lower()}_value')
-            method(key, value)
         elif isinstance(value, Parsable):
             self.write_object_value(key, value)
         elif isinstance(value, list):
@@ -475,24 +471,28 @@ class JsonSerializationWriter(SerializationWriter):
                 self.write_collection_of_object_values(key, value)
             elif all(isinstance(x, Enum) for x in value):
                 self.write_collection_of_enum_values(key, value)
-            elif all((type(x) in PRIMITIVE_TYPES) for x in value):
+            elif all(any(isinstance(x, primitive_type) for primitive_type in PRIMITIVE_TYPES) for x in value):
                 self.write_collection_of_primitive_values(key, value)
             elif all(isinstance(x, dict) for x in value):
                 self.__write_collection_of_dict_values(key, value)
             else:
                 raise TypeError(
-                    f"Encountered an unknown collection type during serialization \
-                    {value_type} with key {key}"
+                    f"Encountered an unknown collection type during serialization {type(value)} with key {key}"
                 )
         elif isinstance(value, dict):
             self.__write_dict_value(key, value)
-        elif hasattr(value, '__dict__'):
-            self.write_non_parsable_object_value(key, value)
         else:
-            raise TypeError(
-                f"Encountered an unknown type during serialization {value_type} \
-                    with key {key}"
-            )
+            for primitive_type in PRIMITIVE_TYPES:
+                if isinstance(value, primitive_type):
+                    method = getattr(self, f"write_{primitive_type.__name__.lower()}_value")
+                    method(key, value)
+                    return
+            if hasattr(value, "__dict__"):
+                self.write_non_parsable_object_value(key, value)
+            else:
+                raise TypeError(
+                    f"Encountered an unknown type during serialization {type(value)} with key {key}"
+                )
 
     def _serialize_value(self, temp_writer: JsonSerializationWriter, value: U):
         if on_before := self.on_before_object_serialization:
