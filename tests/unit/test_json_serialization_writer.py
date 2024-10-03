@@ -103,7 +103,7 @@ def test_write_datetime_value_valid_string():
     json_serialization_writer.write_datetime_value("updatedAt", "2022-01-27T12:59:45.596117")
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"updatedAt": "2022-01-27T12:59:45.596117+00:00"}'
+    assert content_string == '{"updatedAt": "2022-01-27T12:59:45.596117"}'
 
 
 def test_write_datetime_value_invalid_string():
