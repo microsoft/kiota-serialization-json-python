@@ -191,7 +191,7 @@ class JsonSerializationWriter(SerializationWriter):
                 raise ValueError("Invalid time string value found")
 
     def write_collection_of_primitive_values(
-            self, key: Optional[str], values: Optional[List[T]]
+        self, key: Optional[str], values: Optional[List[T]]
     ) -> None:
         """Writes the specified collection of primitive values to the stream with an optional
         given key.
@@ -212,7 +212,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = result
 
     def write_collection_of_object_values(
-            self, key: Optional[str], values: Optional[List[U]]
+        self, key: Optional[str], values: Optional[List[U]]
     ) -> None:
         """Writes the specified collection of model objects to the stream with an optional
         given key.
@@ -233,7 +233,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = obj_list
 
     def write_collection_of_enum_values(
-            self, key: Optional[str], values: Optional[List[Enum]]
+        self, key: Optional[str], values: Optional[List[Enum]]
     ) -> None:
         """Writes the specified collection of enum values to the stream with an optional given key.
         Args:
@@ -253,7 +253,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = result
 
     def __write_collection_of_dict_values(
-            self, key: Optional[str], values: Optional[List[Dict[str, Any]]]
+        self, key: Optional[str], values: Optional[List[Dict[str, Any]]]
     ) -> None:
         """Writes the specified collection of dictionary values to the stream with an optional
             given key.
@@ -290,7 +290,7 @@ class JsonSerializationWriter(SerializationWriter):
                 self.value = base64_string
 
     def write_object_value(
-            self, key: Optional[str], value: Optional[U], *additional_values_to_merge: U
+        self, key: Optional[str], value: Optional[U], *additional_values_to_merge: U
     ) -> None:
         """Writes the specified model object to the stream with an optional given key.
         Args:
@@ -423,7 +423,7 @@ class JsonSerializationWriter(SerializationWriter):
 
     @property
     def on_start_object_serialization(
-            self
+        self
     ) -> Optional[Callable[[Parsable, SerializationWriter], None]]:
         """Gets the callback called right after the serialization process starts.
         Returns:
@@ -434,7 +434,7 @@ class JsonSerializationWriter(SerializationWriter):
 
     @on_start_object_serialization.setter
     def on_start_object_serialization(
-            self, value: Optional[Callable[[Parsable, SerializationWriter], None]]
+        self, value: Optional[Callable[[Parsable, SerializationWriter], None]]
     ) -> None:
         """Sets the callback called right after the serialization process starts.
         Args:
