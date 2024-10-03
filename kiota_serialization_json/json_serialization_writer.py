@@ -480,7 +480,8 @@ class JsonSerializationWriter(SerializationWriter):
                 self.__write_collection_of_dict_values(key, value)
             else:
                 raise TypeError(
-                    f"Encountered an unknown collection type during serialization {type(value)} with key {key}"
+                    f"Encountered an unknown collection type during serialization {type(value)} \
+                    with key {key}"
                 )
         elif isinstance(value, dict):
             self.__write_dict_value(key, value)
