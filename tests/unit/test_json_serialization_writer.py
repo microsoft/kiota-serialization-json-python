@@ -2,7 +2,6 @@ from datetime import date
 from uuid import UUID
 
 import pytest
-
 import pendulum
 from kiota_serialization_json.json_serialization_writer import JsonSerializationWriter
 
@@ -72,20 +71,23 @@ def test_write_uuid_value():
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
     assert content_string == '{"id": "8f841f30-e6e3-439a-a812-ebd369559c36"}'
-    
+
+
 def test_write_uuid_value_with_valid_string():
     json_serialization_writer = JsonSerializationWriter()
     json_serialization_writer.write_uuid_value("id", "8f841f30-e6e3-439a-a812-ebd369559c36")
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
     assert content_string == '{"id": "8f841f30-e6e3-439a-a812-ebd369559c36"}'
-    
+
+
 def test_write_uuid_value_with_invalid_string():
     with pytest.raises(ValueError) as excinfo:
         json_serialization_writer = JsonSerializationWriter()
         json_serialization_writer.write_uuid_value("id", "invalid-uuid-string")
     assert "Invalid UUID string value found for property id" in str(excinfo.value)
-    
+
+
 def test_write_datetime_value():
     json_serialization_writer = JsonSerializationWriter()
     json_serialization_writer.write_datetime_value(
@@ -94,53 +96,50 @@ def test_write_datetime_value():
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
     assert content_string == '{"updatedAt": "2022-01-27T12:59:45.596117+00:00"}'
-    
+
+
 def test_write_datetime_value_valid_string():
     json_serialization_writer = JsonSerializationWriter()
-    json_serialization_writer.write_datetime_value(
-        "updatedAt", "2022-01-27T12:59:45.596117"
-    )
+    json_serialization_writer.write_datetime_value("updatedAt", "2022-01-27T12:59:45.596117")
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"updatedAt": "2022-01-27T12:59:45.596117+00:00"}'
-    
-def test_write_datetime_value_valid_string():
+    assert content_string == '{"updatedAt": "2022-01-27T12:59:45.596117"}'
+
+
+def test_write_datetime_value_invalid_string():
     with pytest.raises(ValueError) as excinfo:
         json_serialization_writer = JsonSerializationWriter()
-        json_serialization_writer.write_datetime_value(
-            "updatedAt", "invalid-datetime-string"
-        )
+        json_serialization_writer.write_datetime_value("updatedAt", "invalid-datetime-string")
     assert "Invalid datetime string value found for property updatedAt" in str(excinfo.value)
+
 
 def test_write_timedelta_value():
     json_serialization_writer = JsonSerializationWriter()
     json_serialization_writer.write_timedelta_value(
-        "diff",
-        (pendulum.parse('2022-01-27T12:59:45.596117') - pendulum.parse('2022-01-27T10:59:45.596117')).as_timedelta()
+        "diff", (
+            pendulum.parse('2022-01-27T12:59:45.596117') -
+            pendulum.parse('2022-01-27T10:59:45.596117')
+        ).as_timedelta()
     )
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
     assert content_string == '{"diff": "2:00:00"}'
-    
+
+
 def test_write_timedelta_value_valid_string():
     json_serialization_writer = JsonSerializationWriter()
-    json_serialization_writer.write_timedelta_value(
-        "diff",
-        "2:00:00"
-    )
+    json_serialization_writer.write_timedelta_value("diff", "2:00:00")
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
     assert content_string == '{"diff": "2:00:00"}'
-    
+
+
 def test_write_timedelta_value_invalid_string():
     with pytest.raises(ValueError) as excinfo:
         json_serialization_writer = JsonSerializationWriter()
-        json_serialization_writer.write_timedelta_value(
-            "diff",
-            "invalid-timedelta-string"
-        )
+        json_serialization_writer.write_timedelta_value("diff", "invalid-timedelta-string")
     assert "Invalid timedelta string value found for property diff" in str(excinfo.value)
-    
+
 
 def test_write_date_value():
     json_serialization_writer = JsonSerializationWriter()
@@ -149,18 +148,21 @@ def test_write_date_value():
     content_string = content.decode('utf-8')
     assert content_string == '{"birthday": "2000-09-04"}'
 
+
 def test_write_date_value_valid_string():
     json_serialization_writer = JsonSerializationWriter()
     json_serialization_writer.write_date_value("birthday", "2000-09-04")
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
     assert content_string == '{"birthday": "2000-09-04"}'
-    
+
+
 def test_write_date_value_invalid_string():
     with pytest.raises(ValueError) as excinfo:
         json_serialization_writer = JsonSerializationWriter()
         json_serialization_writer.write_date_value("birthday", "invalid-date-string")
     assert "Invalid date string value found for property birthday" in str(excinfo.value)
+
 
 def test_write_time_value():
     json_serialization_writer = JsonSerializationWriter()
@@ -172,24 +174,21 @@ def test_write_time_value():
     content_string = content.decode('utf-8')
     assert content_string == '{"time": "12:59:45.596117"}'
 
+
 def test_write_time_value_valid_string():
     json_serialization_writer = JsonSerializationWriter()
-    json_serialization_writer.write_time_value(
-        "time",
-        "12:59:45.596117"
-    )
+    json_serialization_writer.write_time_value("time", "12:59:45.596117")
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
     assert content_string == '{"time": "12:59:45.596117"}'
-    
+
+
 def test_write_time_value_invalid_string():
     with pytest.raises(ValueError) as excinfo:
         json_serialization_writer = JsonSerializationWriter()
-        json_serialization_writer.write_time_value(
-            "time",
-            "invalid-time-string"
-        )
+        json_serialization_writer.write_time_value("time", "invalid-time-string")
     assert "Invalid time string value found for property time" in str(excinfo.value)
+
 
 def test_write_collection_of_primitive_values():
     json_serialization_writer = JsonSerializationWriter()
@@ -206,9 +205,14 @@ def test_write_collection_of_object_values(user_1, user_2):
     json_serialization_writer.write_collection_of_object_values("users", [user_1, user_2])
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"users": [{"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
-        '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '\
-        '{"display_name": "John Doe", "age": 32}]}'
+    expected = (
+        '{"users": ['
+        '{"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '
+        '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '
+        '{"display_name": "John Doe", "age": 32}'
+        ']}'
+    )
+    assert content_string == expected
 
 
 def test_write_collection_of_enum_values():
@@ -226,8 +230,13 @@ def test_write_object_value(user_1):
     json_serialization_writer.write_object_value("user1", user_1)
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"user1": {"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
-        '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}}'
+    expected = (
+        '{"user1": {'
+        '"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '
+        '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true'
+        '}}'
+    )
+    assert content_string == expected
 
 
 def test_write_enum_value():
@@ -255,6 +264,7 @@ def test_write_additional_data_value(user_1, user_2):
             "manager": user_1,
             "approvers": [user_1, user_2],
             "created_at": date(2022, 1, 27),
+            "updated_at": pendulum.DateTime(2024, 9, 24),
             "data": {
                 "groups": [{
                     "friends": [user_2]
@@ -264,12 +274,18 @@ def test_write_additional_data_value(user_1, user_2):
     )
     content = json_serialization_writer.get_serialized_content()
     content_string = content.decode('utf-8')
-    assert content_string == '{"@odata.context": '\
-        '"https://graph.microsoft.com/v1.0/$metadata#users/$entity", '\
-            '"businessPhones": ["+1 205 555 0108"], '\
-            '"manager": {"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
-                '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '\
-            '"approvers": [{"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '\
-                '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '\
-                '{"display_name": "John Doe", "age": 32}], "created_at": "2022-01-27", '\
-                '"data": {"groups": [{"friends": [{"display_name": "John Doe", "age": 32}]}]}}'
+    expected = (
+        '{"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity", '
+        '"businessPhones": ["+1 205 555 0108"], '
+        '"manager": {"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '
+        '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '
+        '"approvers": ['
+        '{"id": "8f841f30-e6e3-439a-a812-ebd369559c36", '
+        '"updated_at": "2022-01-27T12:59:45.596117+00:00", "is_active": true}, '
+        '{"display_name": "John Doe", "age": 32}'
+        '], '
+        '"created_at": "2022-01-27", '
+        '"updated_at": "2024-09-24T00:00:00", '
+        '"data": {"groups": [{"friends": [{"display_name": "John Doe", "age": 32}]}]}}'
+    )
+    assert content_string == expected
